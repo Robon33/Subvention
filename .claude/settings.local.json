@@ -5,7 +5,13 @@
       "Bash(npx --yes create-vite@latest . --template react)",
       "Bash(npm install:*)",
       "Bash(curl -s http://localhost:5173)",
-      "Bash(npx playwright:*)"
+      "Bash(npx playwright:*)",
+      "Bash(npm run:*)",
+      "Bash(timeout 60 npx vite build)",
+      "Bash(npx vite:*)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(pkill -f 'vite build')",
+      "Bash(curl -s \"http://localhost:5173/simulateur\")"
     ]
   }
 }

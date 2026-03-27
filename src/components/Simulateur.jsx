@@ -1,27 +1,11 @@
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { questions } from '../data/questions'
 import { calculerEligibilite, calculerMontantTotal } from '../data/eligibilite'
+import { useCountUp } from '../hooks/useCountUp'
 import ProgressBar from './ProgressBar'
 import Question from './Question'
 import ResultatCard from './ResultatCard'
-
-// Hook pour animer un compteur
-function useCountUp(target, duration = 1500) {
-  const [count, setCount] = useState(0)
-  const startRef = useRef(null)
-
-  useEffect(() => {
-    startRef.current = null
-    const step = (timestamp) => {
-      if (!startRef.current) startRef.current = timestamp
-      const progress = Math.min((timestamp - startRef.current) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.round(eased * target))
-      if (progress < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  }, [target, duration])
 
   return count
 }
@@ -30,7 +14,7 @@ function useCountUp(target, duration = 1500) {
 function Resultats({ reponses, onRestart }) {
   const dispositifsEligibles = useMemo(() => calculerEligibilite(reponses), [reponses])
   const montantTotal = useMemo(() => calculerMontantTotal(dispositifsEligibles), [dispositifsEligibles])
-  const countedTotal = useCountUp(montantTotal)
+  const countedTotal = useCountUp(montantTotal, 1500, true)
 
   const CALENDLY_URL = 'https://calendly.com/votre-lien'
 
