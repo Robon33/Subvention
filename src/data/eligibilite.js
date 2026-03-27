@@ -1,118 +1,86 @@
-export const dispositifs = [
-  {
-    id: "investissement_materiel",
-    nom: "Aide à l'investissement matériel",
-    description: "Financement de vos équipements professionnels via les fonds régionaux et Bpifrance.",
-    montantMin: 5000,
-    montantMax: 26000,
-    organisme: "Bpifrance / Région",
-    eligible: (r) =>
-      r.projets?.includes("materiel") &&
-      r.taille !== "micro" &&
-      r.anciennete !== "moins_1_an" &&
-      r.montantInvestissement !== "moins_10k",
-  },
-  {
-    id: "cheque_numerique",
-    nom: "Chèque Transformation Numérique",
-    description: "Financement de votre digitalisation : site web, logiciels de gestion, caisse enregistreuse connectée.",
-    montantMin: 1500,
-    montantMax: 5000,
-    organisme: "BPI / Région",
-    eligible: (r) =>
-      r.projets?.includes("digital") &&
-      (r.taille === "micro" || r.taille === "tpe"),
-  },
-  {
-    id: "aide_embauche",
-    nom: "Aide à l'embauche CDI",
-    description: "Soutien financier à la création d'emplois durables dans les petites entreprises.",
-    montantMin: 1000,
-    montantMax: 4000,
-    organisme: "État / Pôle Emploi",
-    eligible: (r) =>
-      r.projets?.includes("recruter") &&
-      r.typeRecrutement === "cdi",
-  },
-  {
-    id: "alternance",
-    nom: "Aide à l'alternance",
-    description: "Prime apprentissage versée dès la première année de contrat d'alternance.",
-    montantMin: 6000,
-    montantMax: 6000,
-    organisme: "État",
-    eligible: (r) =>
-      r.projets?.includes("recruter") &&
-      r.typeRecrutement === "alternance",
-  },
-  {
-    id: "fne_formation",
-    nom: "FNE-Formation",
-    description: "Financement de la montée en compétences de vos salariés existants.",
-    montantMin: 2000,
-    montantMax: 15000,
-    organisme: "France Travail",
-    eligible: (r) =>
-      r.projets?.includes("recruter") &&
-      r.typeRecrutement === "formation" &&
-      r.taille !== "micro",
-  },
-  {
-    id: "renovation_energetique",
-    nom: "Aide ADEME Rénovation Énergétique",
-    description: "Financement de vos travaux et équipements pour réduire votre consommation d'énergie.",
-    montantMin: 5000,
-    montantMax: 25000,
-    organisme: "ADEME",
-    eligible: (r) => r.projets?.includes("energie"),
-  },
-  {
-    id: "pmr",
-    nom: "Aide Mise aux Normes PMR",
-    description: "Financement de l'accessibilité aux personnes en situation de handicap.",
-    montantMin: 3000,
-    montantMax: 20000,
-    organisme: "État / Collectivité",
-    eligible: (r) =>
-      r.projets?.includes("pmr") &&
-      r.localERP === "oui",
-  },
-  {
-    id: "french_tech",
-    nom: "Bourse French Tech Bpifrance",
-    description: "Subvention nationale pour projet innovant en phase d'amorçage.",
-    montantMin: 30000,
-    montantMax: 50000,
-    organisme: "Bpifrance",
-    eligible: (r) =>
-      r.projets?.includes("innovation") &&
-      r.anciennete === "moins_1_an" &&
-      r.statutInnovant === "oui",
-  },
-  {
-    id: "acre",
-    nom: "ACRE — Exonération de charges",
-    description: "Exonération partielle de charges sociales pour les créateurs et repreneurs d'entreprise.",
-    montantMin: 3000,
-    montantMax: 8000,
-    organisme: "URSSAF",
-    eligible: (r) => r.anciennete === "moins_1_an",
-  },
-  {
-    id: "renovation_locale",
-    nom: "Aide à la rénovation de local commercial",
-    description: "Financement des travaux d'embellissement, mise en conformité et rénovation de votre local.",
-    montantMin: 2000,
-    montantMax: 10000,
-    organisme: "Chambre de Commerce / Région",
-    eligible: (r) => r.projets?.includes("renover"),
-  },
-]
+import aidesData from './aides.json' with { type: 'json' }
+
+// ─── Règles d'éligibilité explicites (keyed par aide.id) ────────────────────
+//
+// Ces règles surpassent le fallback tag-based pour les aides "curées".
+// Elles correspondent au questionnaire (reponses) de Simulateur.jsx.
+//
+const RULES = {
+  investissement_materiel: (r) =>
+    r.projets?.includes('materiel') &&
+    r.taille !== 'micro' &&
+    r.anciennete !== 'moins_1_an' &&
+    r.montantInvestissement !== 'moins_10k',
+
+  cheque_numerique: (r) =>
+    r.projets?.includes('digital') &&
+    (r.taille === 'micro' || r.taille === 'tpe'),
+
+  aide_embauche: (r) =>
+    r.projets?.includes('recruter') && r.typeRecrutement === 'cdi',
+
+  alternance: (r) =>
+    r.projets?.includes('recruter') && r.typeRecrutement === 'alternance',
+
+  fne_formation: (r) =>
+    r.projets?.includes('recruter') &&
+    r.typeRecrutement === 'formation' &&
+    r.taille !== 'micro',
+
+  renovation_energetique: (r) => r.projets?.includes('energie'),
+
+  pmr: (r) => r.projets?.includes('pmr') && r.localERP === 'oui',
+
+  french_tech: (r) =>
+    r.projets?.includes('innovation') &&
+    r.anciennete === 'moins_1_an' &&
+    r.statutInnovant === 'oui',
+
+  acre: (r) => r.anciennete === 'moins_1_an',
+
+  renovation_locale: (r) => r.projets?.includes('renover'),
+}
+
+// ─── Fallback basé sur les tags (pour les aides scrapées) ───────────────────
+
+function ruleFromTags(aide) {
+  const { projets = [], tailles = [] } = aide.tags || {}
+
+  return (r) => {
+    // Si aucun tag projet → l'aide est générique, on la montre à tous
+    const projetMatch =
+      projets.length === 0 || projets.some((p) => r.projets?.includes(p))
+
+    // Si aucun tag taille → compatible toutes tailles
+    const tailleMatch =
+      tailles.length === 0 || tailles.includes(r.taille)
+
+    return projetMatch && tailleMatch
+  }
+}
+
+// ─── Construction des dispositifs ───────────────────────────────────────────
+
+export const dispositifs = aidesData.aides.map((aide) => ({
+  ...aide,
+  // organisme (singular) pour rétrocompatibilité
+  organisme: aide.organismes?.join(' / ') || '',
+  eligible: RULES[aide.id] ?? ruleFromTags(aide),
+}))
+
+// ─── API publique ────────────────────────────────────────────────────────────
 
 export function calculerEligibilite(reponses) {
   return dispositifs.filter((d) => d.eligible(reponses))
 }
 
 export function calculerMontantTotal(dispositifsEligibles) {
-  return dispositifsEligibles.reduce((acc, d) => acc + d.montantMax, 0)
+  return dispositifsEligibles.reduce((acc, d) => acc + (d.montantMax ?? 0), 0)
+}
+
+// Meta
+export const aidesMetadata = {
+  generatedAt: aidesData.generatedAt,
+  source:      aidesData.source,
+  total:       aidesData.total,
 }

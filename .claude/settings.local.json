@@ -4,7 +4,8 @@
       "Bash(npm create:*)",
       "Bash(npx --yes create-vite@latest . --template react)",
       "Bash(npm install:*)",
-      "Bash(curl -s http://localhost:5173)"
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(npx playwright:*)"
     ]
   }
 }

@@ -1,0 +1,117 @@
+{
+  "generatedAt": "2026-03-27T00:00:00.000Z",
+  "source": "manual",
+  "total": 10,
+  "aides": [
+    {
+      "id": "investissement_materiel",
+      "nom": "Aide à l'investissement matériel",
+      "description": "Financement de vos équipements professionnels via les fonds régionaux et Bpifrance.",
+      "montantMin": 5000,
+      "montantMax": 26000,
+      "organismes": ["Bpifrance", "Région"],
+      "tags": { "projets": ["materiel"], "tailles": ["tpe", "pme"] },
+      "source": "https://www.bpifrance.fr/",
+      "_manual": true
+    },
+    {
+      "id": "cheque_numerique",
+      "nom": "Chèque Transformation Numérique",
+      "description": "Financement de votre digitalisation : site web, logiciels de gestion, caisse enregistreuse connectée.",
+      "montantMin": 1500,
+      "montantMax": 5000,
+      "organismes": ["Bpifrance", "Région"],
+      "tags": { "projets": ["digital"], "tailles": ["micro", "tpe"] },
+      "source": "https://www.bpifrance.fr/",
+      "_manual": true
+    },
+    {
+      "id": "aide_embauche",
+      "nom": "Aide à l'embauche CDI",
+      "description": "Soutien financier à la création d'emplois durables dans les petites entreprises.",
+      "montantMin": 1000,
+      "montantMax": 4000,
+      "organismes": ["État", "France Travail"],
+      "tags": { "projets": ["recruter"], "tailles": [] },
+      "source": "https://travail-emploi.gouv.fr/",
+      "_manual": true
+    },
+    {
+      "id": "alternance",
+      "nom": "Aide à l'alternance",
+      "description": "Prime apprentissage versée dès la première année de contrat d'alternance.",
+      "montantMin": 6000,
+      "montantMax": 6000,
+      "organismes": ["État"],
+      "tags": { "projets": ["recruter"], "tailles": [] },
+      "source": "https://travail-emploi.gouv.fr/formation-professionnelle/alternance/",
+      "_manual": true
+    },
+    {
+      "id": "fne_formation",
+      "nom": "FNE-Formation",
+      "description": "Financement de la montée en compétences de vos salariés existants.",
+      "montantMin": 2000,
+      "montantMax": 15000,
+      "organismes": ["France Travail"],
+      "tags": { "projets": ["recruter"], "tailles": ["tpe", "pme"] },
+      "source": "https://travail-emploi.gouv.fr/",
+      "_manual": true
+    },
+    {
+      "id": "renovation_energetique",
+      "nom": "Aide ADEME Rénovation Énergétique",
+      "description": "Financement de vos travaux et équipements pour réduire votre consommation d'énergie.",
+      "montantMin": 5000,
+      "montantMax": 25000,
+      "organismes": ["ADEME"],
+      "tags": { "projets": ["energie"], "tailles": [] },
+      "source": "https://agirpourlatransition.ademe.fr/",
+      "_manual": true
+    },
+    {
+      "id": "pmr",
+      "nom": "Aide Mise aux Normes PMR",
+      "description": "Financement de l'accessibilité aux personnes en situation de handicap dans les ERP.",
+      "montantMin": 3000,
+      "montantMax": 20000,
+      "organismes": ["État", "Collectivité"],
+      "tags": { "projets": ["pmr"], "tailles": [] },
+      "source": "https://www.service-public.fr/",
+      "_manual": true
+    },
+    {
+      "id": "french_tech",
+      "nom": "Bourse French Tech Bpifrance",
+      "description": "Subvention nationale pour projet innovant en phase d'amorçage.",
+      "montantMin": 30000,
+      "montantMax": 50000,
+      "organismes": ["Bpifrance"],
+      "tags": { "projets": ["innovation"], "tailles": [] },
+      "source": "https://www.bpifrance.fr/",
+      "_manual": true
+    },
+    {
+      "id": "acre",
+      "nom": "ACRE — Exonération de charges",
+      "description": "Exonération partielle de charges sociales pour les créateurs et repreneurs d'entreprise.",
+      "montantMin": 3000,
+      "montantMax": 8000,
+      "organismes": ["URSSAF"],
+      "tags": { "projets": [], "tailles": [] },
+      "source": "https://www.urssaf.fr/",
+      "_manual": true
+    },
+    {
+      "id": "renovation_locale",
+      "nom": "Aide à la rénovation de local commercial",
+      "description": "Financement des travaux d'embellissement, mise en conformité et rénovation de votre local.",
+      "montantMin": 2000,
+      "montantMax": 10000,
+      "organismes": ["Chambre de Commerce", "Région"],
+      "tags": { "projets": ["renover"], "tailles": [] },
+      "source": "https://www.cci.fr/",
+      "_manual": true
+    }
+  ]
+}
