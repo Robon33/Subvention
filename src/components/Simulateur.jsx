@@ -7,9 +7,6 @@ import ProgressBar from './ProgressBar'
 import Question from './Question'
 import ResultatCard from './ResultatCard'
 
-  return count
-}
-
 // --- Page résultats ---
 function Resultats({ reponses, onRestart }) {
   const dispositifsEligibles = useMemo(() => calculerEligibilite(reponses), [reponses])

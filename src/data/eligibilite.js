@@ -1,4 +1,4 @@
-import aidesData from './aides.json' with { type: 'json' }
+import aidesData from './aides.json'
 
 // ─── Règles d'éligibilité explicites (keyed par aide.id) ────────────────────
 //
