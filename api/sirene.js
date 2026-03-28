@@ -1,4 +1,7 @@
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Content-Type', 'application/json')
+
   const { siren } = req.query
   const sirenClean = siren?.replace(/\s/g, '')
 

@@ -37,12 +37,16 @@ export default function SirenStep({ onConfirm, onSkip, dark = false }) {
     setPhase('loading')
     try {
       const res = await fetch(`/api/sirene?siren=${siren}`)
-      const data = await res.json()
+      const text = await res.text()
+      console.log('Sirene raw response:', res.status, text)
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${text}`)
+      const data = JSON.parse(text)
       if (data.error) throw new Error(data.error)
       // data = { nom, siren, naf, secteur, taille, anciennete, anneeCreation, region, departement }
       setEntreprise(data)
       setPhase('found')
-    } catch {
+    } catch (err) {
+      console.error('Sirene error:', err)
       setErrorMsg('Entreprise introuvable. Vérifiez votre SIREN ou continuez manuellement.')
       setPhase('error')
     }
