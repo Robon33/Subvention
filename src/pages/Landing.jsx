@@ -3,18 +3,18 @@ import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { useCountUp } from '../hooks/useCountUp'
 import Simulateur from '../components/Simulateur'
 
-// ─── Utilitaires ──────────────────────────────────────────────────────────────
+// ─── Animation helpers ────────────────────────────────────────────────────────
 
 const fadeUp = {
   hidden: { opacity: 0, y: 32 },
   visible: (delay = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94], delay },
+    transition: { duration: 0.4, ease: 'easeOut', delay },
   }),
 }
 
-function FadeUp({ children, delay = 0, className = '' }) {
+function FadeUp({ children, delay = 0, className = '', lift = false }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
   return (
@@ -25,6 +25,7 @@ function FadeUp({ children, delay = 0, className = '' }) {
       animate={inView ? 'visible' : 'hidden'}
       custom={delay}
       variants={fadeUp}
+      whileHover={lift ? { y: -2, transition: { duration: 0.2 } } : undefined}
     >
       {children}
     </motion.div>
@@ -47,6 +48,46 @@ function Section({ children, className = '', id }) {
   )
 }
 
+// ─── SVG Icons ────────────────────────────────────────────────────────────────
+
+function IconDocument() {
+  return (
+    <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  )
+}
+
+function IconAlertTriangle() {
+  return (
+    <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  )
+}
+
+function IconPhone() {
+  return (
+    <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 013 1.18 2 2 0 015 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L9.91 7.91a16 16 0 006.29 6.29l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z" />
+    </svg>
+  )
+}
+
+function IconZap() {
+  return (
+    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  )
+}
+
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
 function Navbar() {
@@ -61,34 +102,35 @@ function Navbar() {
   return (
     <nav
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? 'apple-nav py-3' : 'bg-transparent py-5'
+        scrolled ? 'vectra-nav py-3' : 'bg-transparent py-5'
       }`}
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-        {/* Logo */}
         <a href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0071E3] to-[#5E5CE6] flex items-center justify-center shadow-md">
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md"
+            style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)' }}
+          >
             <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
             </svg>
           </div>
-          <span className="font-bold text-[#1D1D1F] text-base tracking-tight">SubventionPro</span>
+          <span className="font-bold text-[#1A1A18] text-base tracking-tight">SubventionPro</span>
         </a>
 
         <div className="hidden sm:flex items-center gap-8">
-          <a href="#comment-ca-marche" className="text-sm text-[#6E6E73] hover:text-[#1D1D1F] transition-colors duration-200">
+          <a href="#comment-ca-marche" className="text-sm text-[#6B6860] hover:text-[#1A1A18] transition-colors duration-200">
             Comment ça marche
           </a>
-          <a href="#faq" className="text-sm text-[#6E6E73] hover:text-[#1D1D1F] transition-colors duration-200">
+          <a href="#faq" className="text-sm text-[#6B6860] hover:text-[#1A1A18] transition-colors duration-200">
             FAQ
           </a>
-          <a href="#simulateur" className="btn-cta text-sm px-5 py-2.5">
+          <a href="#simulateur" className="btn-cta text-sm px-6 py-3">
             Simuler gratuitement
           </a>
         </div>
 
-        {/* Mobile CTA */}
-        <a href="#simulateur" className="sm:hidden btn-cta text-sm px-4 py-2">
+        <a href="#simulateur" className="sm:hidden btn-cta text-sm px-4 py-2.5">
           Simuler →
         </a>
       </div>
@@ -100,15 +142,15 @@ function Navbar() {
 
 function MockupCard() {
   return (
-    <div className="apple-card p-6 max-w-sm mx-auto">
+    <div className="vectra-card p-6 max-w-sm mx-auto">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-2 h-2 rounded-full bg-[#34C759] animate-pulse" />
-        <span className="text-xs text-[#6E6E73] font-medium">3 aides trouvées</span>
+        <div className="w-2 h-2 rounded-full bg-[#4CAF7D] animate-pulse" />
+        <span className="text-xs text-[#6B6860] font-medium">3 aides trouvées</span>
       </div>
-      <div className="text-3xl font-bold text-[#1D1D1F] mb-1">
-        34 000 <span className="text-[#0071E3]">€</span>
+      <div className="text-3xl font-bold text-[#1A1A18] mb-1">
+        34 000 <span className="text-[#E8915A]">€</span>
       </div>
-      <div className="text-sm text-[#6E6E73] mb-5">estimés pour votre profil</div>
+      <div className="text-sm text-[#6B6860] mb-5">estimés pour votre profil</div>
       <div className="space-y-3">
         {[
           { nom: 'Chèque Numérique', montant: '5 000 €', tag: 'digital' },
@@ -117,13 +159,14 @@ function MockupCard() {
         ].map((item, i) => (
           <div
             key={i}
-            className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-[#F5F5F7] border border-[#D2D2D7]"
+            className="flex items-center justify-between py-2.5 px-3 rounded-xl"
+            style={{ background: '#F5F0E8', border: '1px solid rgba(26,26,24,0.07)' }}
           >
             <div>
-              <div className="text-sm font-medium text-[#1D1D1F]">{item.nom}</div>
-              <span className="text-[10px] text-[#6E6E73] uppercase tracking-wide">{item.tag}</span>
+              <div className="text-sm font-medium text-[#1A1A18]">{item.nom}</div>
+              <span className="text-[10px] text-[#6B6860] uppercase tracking-wide">{item.tag}</span>
             </div>
-            <div className="text-sm font-bold text-[#0071E3]">{item.montant}</div>
+            <div className="text-sm font-bold text-[#E8915A]">{item.montant}</div>
           </div>
         ))}
       </div>
@@ -133,25 +176,40 @@ function MockupCard() {
 
 function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-16 overflow-hidden bg-gradient-to-b from-[#F5F5F7] to-white">
+    <section
+      className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-28 pb-16 overflow-hidden"
+      style={{ background: '#F5F0E8' }}
+    >
+      {/* Blob décoratif top-right */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-0 right-0 w-[600px] h-[600px]"
+        style={{
+          background: 'radial-gradient(circle at 70% 30%, rgba(232,145,90,0.10) 0%, transparent 65%)',
+        }}
+      />
+
       <div className="relative z-10 max-w-3xl mx-auto text-center">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 apple-pill mb-8"
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="inline-flex mb-8"
         >
-          <span>⚡</span>
-          <span>Simulation gratuite · Résultat en 2 minutes</span>
+          <span className="vectra-pill">
+            <span className="text-[#E8915A]"><IconZap /></span>
+            Simulation gratuite · Résultat immédiat
+          </span>
         </motion.div>
 
         {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-5xl sm:text-7xl font-extrabold text-[#1D1D1F] leading-[1.05] tracking-tight mb-6"
+          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
+          className="font-extrabold text-[#1A1A18] leading-[1.05] mb-6"
+          style={{ fontSize: 'clamp(48px, 8vw, 72px)', letterSpacing: '-0.03em' }}
         >
           L'État vous doit<br />
           <span className="gradient-text">de l'argent.</span>
@@ -161,27 +219,25 @@ function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="text-lg sm:text-xl text-[#6E6E73] leading-relaxed max-w-2xl mx-auto mb-10"
+          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.2 }}
+          className="text-[#6B6860] leading-relaxed max-w-2xl mx-auto mb-10"
+          style={{ fontSize: '18px', lineHeight: '1.7' }}
         >
           Subventions régionales, aides nationales, fonds européens — votre entreprise est probablement éligible à des milliers d'euros que vous ne réclamez pas.{' '}
-          <span className="text-[#1D1D1F] font-semibold">On s'occupe de tout.</span>
+          <span className="text-[#1A1A18] font-semibold">On s'occupe de tout.</span>
         </motion.p>
 
         {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6"
+          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.3 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-5"
         >
           <a href="#simulateur" className="btn-cta btn-cta-lg w-full sm:w-auto">
             Calculer mes aides gratuitement →
           </a>
-          <a
-            href="#comment-ca-marche"
-            className="btn-ghost w-full sm:w-auto px-7 py-4 text-base"
-          >
+          <a href="#comment-ca-marche" className="btn-ghost w-full sm:w-auto">
             Voir comment ça marche
           </a>
         </motion.div>
@@ -189,17 +245,17 @@ function Hero() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.55 }}
-          className="text-sm text-[#6E6E73] mb-14"
+          transition={{ delay: 0.45, ease: 'easeOut' }}
+          className="text-sm text-[#6B6860] mb-14"
         >
-          ⚡ Résultat en 2 minutes · Zéro engagement · Zéro avance de frais
+          Résultat en 2 minutes · Zéro engagement · Zéro avance de frais
         </motion.p>
 
         {/* Mockup */}
         <motion.div
           initial={{ opacity: 0, y: 40, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.9, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: 0.6, delay: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <MockupCard />
         </motion.div>
@@ -216,18 +272,22 @@ function StatCard({ target, suffix = '', label, delay }) {
   const count = useCountUp(target, 1800, inView)
 
   return (
-    <FadeUp delay={delay} className="apple-card p-8 text-center hover-lift">
-      <div ref={ref} className="text-4xl sm:text-5xl font-extrabold text-[#1D1D1F] mb-2 tabular-nums">
+    <FadeUp delay={delay} lift className="vectra-card p-8 text-center hover-lift">
+      <div
+        ref={ref}
+        className="font-extrabold text-[#1A1A18] mb-2 tabular-nums"
+        style={{ fontSize: '56px', letterSpacing: '-0.02em', lineHeight: 1 }}
+      >
         {count.toLocaleString('fr-FR')}{suffix}
       </div>
-      <div className="text-sm text-[#6E6E73] leading-snug">{label}</div>
+      <div className="text-sm text-[#6B6860] leading-snug">{label}</div>
     </FadeUp>
   )
 }
 
 function Stats() {
   return (
-    <Section className="py-20 px-6 bg-white">
+    <Section className="py-20 px-6" style={{ background: '#EDEAE3' }}>
       <div className="max-w-5xl mx-auto grid sm:grid-cols-3 gap-5">
         <StatCard target={40000} suffix="€" label="identifiés en moyenne par simulation" delay={0} />
         <StatCard target={11} label="dispositifs cumulables analysés" delay={0.1} />
@@ -237,26 +297,36 @@ function Stats() {
   )
 }
 
-// ─── Simulateur intégré ────────────────────────────────────────────────────────
+// ─── Section Simulateur (dark) ────────────────────────────────────────────────
 
 function SimulateurSection() {
   return (
-    <Section id="simulateur" className="py-24 px-6 bg-[#F5F5F7]">
-      <div className="max-w-3xl mx-auto">
+    <Section id="simulateur" className="py-24 px-6 overflow-hidden" style={{ background: '#111010' }}>
+      {/* Blob décoratif orange */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-[-100px] right-[-100px] w-[600px] h-[600px] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(232,145,90,0.15) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+        }}
+      />
+
+      <div className="relative z-10 max-w-3xl mx-auto">
         <FadeUp className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1D1D1F] mb-3">
+          <h2
+            className="font-bold text-white mb-3"
+            style={{ fontSize: 'clamp(36px, 5vw, 52px)', letterSpacing: '-0.02em' }}
+          >
             Découvrez vos aides en 2 minutes
           </h2>
-          <p className="text-[#6E6E73] text-base">
+          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '18px' }}>
             Simulation gratuite · Sans engagement · Résultat immédiat
           </p>
         </FadeUp>
 
         <FadeUp delay={0.1}>
-          <div
-            className="bg-white border border-[#D2D2D7] overflow-hidden"
-            style={{ borderRadius: '24px', boxShadow: '0 4px 40px rgba(0,0,0,0.08), 0 1px 6px rgba(0,0,0,0.04)' }}
-          >
+          <div className="dark-card" style={{ padding: '40px' }}>
             <Simulateur inline />
           </div>
         </FadeUp>
@@ -290,43 +360,60 @@ const STEPS = [
 
 function CommentCaMarche() {
   return (
-    <Section id="comment-ca-marche" className="py-24 px-6 bg-white">
+    <Section id="comment-ca-marche" className="py-24 px-6" style={{ background: '#F5F0E8' }}>
       <div className="max-w-2xl mx-auto">
         <FadeUp className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#1D1D1F] mb-4">
+          <h2
+            className="font-bold text-[#1A1A18] mb-4"
+            style={{ fontSize: 'clamp(32px, 4vw, 52px)', letterSpacing: '-0.02em' }}
+          >
             Trois étapes. Zéro prise de tête.
           </h2>
         </FadeUp>
 
-        <div className="relative">
-          <div
-            aria-hidden
-            className="absolute left-7 top-10 bottom-10 w-px bg-gradient-to-b from-[#0071E3]/30 via-[#5E5CE6]/20 to-transparent hidden sm:block"
-          />
+        <div className="space-y-10">
+          {STEPS.map((step, i) => (
+            <FadeUp key={step.num} delay={i * 0.12}>
+              <div className="relative flex gap-6">
+                {/* Watermark number */}
+                <div
+                  aria-hidden
+                  className="absolute -left-2 -top-4 select-none pointer-events-none font-extrabold leading-none"
+                  style={{
+                    fontSize: '96px',
+                    background: 'linear-gradient(135deg, #E8915A, #D4724A)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    opacity: 0.10,
+                  }}
+                >
+                  {step.num}
+                </div>
 
-          <div className="space-y-10">
-            {STEPS.map((step, i) => (
-              <FadeUp key={step.num} delay={i * 0.15}>
-                <div className="flex gap-6">
-                  <div className="shrink-0 w-14 h-14 rounded-2xl apple-card flex items-center justify-center text-[#0071E3] font-extrabold text-lg">
+                {/* Content card */}
+                <div className="vectra-card p-6 flex-1 relative">
+                  <div
+                    className="text-xs font-bold mb-3 tabular-nums"
+                    style={{ color: '#E8915A' }}
+                  >
                     {step.num}
                   </div>
-                  <div className="pt-2 flex-1">
-                    <h3 className="text-lg font-bold text-[#1D1D1F] mb-2">{step.titre}</h3>
-                    <p className="text-[#6E6E73] text-sm leading-relaxed mb-3">{step.desc}</p>
-                    {step.cta && (
-                      <a
-                        href={step.cta.href}
-                        className="text-sm font-semibold text-[#0071E3] hover:text-[#0077ED] transition-colors"
-                      >
-                        {step.cta.label}
-                      </a>
-                    )}
-                  </div>
+                  <h3 className="text-lg font-bold text-[#1A1A18] mb-2">{step.titre}</h3>
+                  <p className="text-[#6B6860] text-sm leading-relaxed mb-3">{step.desc}</p>
+                  {step.cta && (
+                    <a
+                      href={step.cta.href}
+                      className="text-sm font-semibold transition-colors"
+                      style={{ color: '#E8915A' }}
+                    >
+                      {step.cta.label}
+                    </a>
+                  )}
                 </div>
-              </FadeUp>
-            ))}
-          </div>
+              </div>
+            </FadeUp>
+          ))}
         </div>
       </div>
     </Section>
@@ -337,17 +424,17 @@ function CommentCaMarche() {
 
 const WHY_CARDS = [
   {
-    icon: '📋',
+    icon: <IconDocument />,
     titre: 'Plus de 200 dispositifs',
     desc: 'Régionaux, nationaux, européens, sectoriels. Impossible à suivre seul. On cartographie tout pour vous.',
   },
   {
-    icon: '😤',
+    icon: <IconAlertTriangle />,
     titre: 'Des dossiers conçus pour décourager',
     desc: 'Formulaires abscons, pièces justificatives multiples, délais incompréhensibles. On a appris à les aimer.',
   },
   {
-    icon: '📞',
+    icon: <IconPhone />,
     titre: 'Personne ne vous appelle',
     desc: "L'État ne fait pas de marketing. Aucun organisme ne vous prévient que vous êtes éligible. C'est exactement notre rôle.",
   },
@@ -355,27 +442,28 @@ const WHY_CARDS = [
 
 function PourquoiNous() {
   return (
-    <Section className="py-24 px-6 bg-[#F5F5F7]">
+    <Section className="py-24 px-6" style={{ background: '#EDEAE3' }}>
       <div className="max-w-5xl mx-auto">
         <FadeUp className="text-center mb-4">
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#1D1D1F]">
+          <h2
+            className="font-bold text-[#1A1A18]"
+            style={{ fontSize: 'clamp(28px, 4vw, 52px)', letterSpacing: '-0.02em' }}
+          >
             Ce n'est pas votre faute si vous êtes passé à côté.
           </h2>
         </FadeUp>
         <FadeUp delay={0.1} className="text-center mb-14">
-          <p className="text-[#6E6E73] text-base max-w-xl mx-auto leading-relaxed">
+          <p className="text-[#6B6860] text-base max-w-xl mx-auto leading-relaxed" style={{ lineHeight: 1.7 }}>
             Le système de subventions français est complexe par conception. On a construit l'outil qu'il aurait fallu depuis le début.
           </p>
         </FadeUp>
 
         <div className="grid sm:grid-cols-3 gap-5">
           {WHY_CARDS.map((card, i) => (
-            <FadeUp key={card.titre} delay={i * 0.12}>
-              <div className="apple-card p-7 h-full hover-lift">
-                <div className="text-3xl mb-4">{card.icon}</div>
-                <h3 className="font-bold text-[#1D1D1F] text-base mb-3">{card.titre}</h3>
-                <p className="text-[#6E6E73] text-sm leading-relaxed">{card.desc}</p>
-              </div>
+            <FadeUp key={card.titre} delay={i * 0.1} lift className="vectra-card p-7 h-full hover-lift">
+              <div className="text-[#E8915A] mb-4">{card.icon}</div>
+              <h3 className="font-bold text-[#1A1A18] text-base mb-3">{card.titre}</h3>
+              <p className="text-[#6B6860] text-sm leading-relaxed" style={{ lineHeight: 1.7 }}>{card.desc}</p>
             </FadeUp>
           ))}
         </div>
@@ -409,28 +497,42 @@ const TEMOIGNAGES = [
 
 function Temoignages() {
   return (
-    <Section className="py-24 px-6 bg-white">
+    <Section className="py-24 px-6" style={{ background: '#F5F0E8' }}>
       <div className="max-w-5xl mx-auto">
         <FadeUp className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#1D1D1F]">
+          <h2
+            className="font-bold text-[#1A1A18]"
+            style={{ fontSize: 'clamp(28px, 4vw, 52px)', letterSpacing: '-0.02em' }}
+          >
             Ils ne savaient pas non plus.
           </h2>
         </FadeUp>
 
         <div className="grid sm:grid-cols-3 gap-5">
           {TEMOIGNAGES.map((t, i) => (
-            <FadeUp key={t.nom} delay={i * 0.12}>
-              <div className="apple-card p-7 flex flex-col gap-5 hover-lift h-full">
-                <div className="inline-flex self-start items-center gap-1.5 bg-[#34C759]/10 border border-[#34C759]/25 text-[#1E7E34] text-sm font-bold px-3 py-1.5 rounded-full">
-                  {t.montant}
-                </div>
-                <p className="text-[#1D1D1F] text-sm leading-relaxed flex-1 italic">
-                  "{t.quote}"
-                </p>
-                <div>
-                  <div className="font-semibold text-[#1D1D1F] text-sm">{t.nom}</div>
-                  <div className="text-[#6E6E73] text-xs mt-0.5">{t.titre}</div>
-                </div>
+            <FadeUp key={t.nom} delay={i * 0.1} lift className="vectra-card p-7 flex flex-col gap-5 hover-lift h-full">
+              {/* Quote marks décoratifs */}
+              <div
+                className="text-5xl font-serif leading-none select-none"
+                style={{ color: '#E8915A', opacity: 0.25, lineHeight: 0.8 }}
+              >
+                "
+              </div>
+
+              {/* Badge montant */}
+              <div
+                className="inline-flex self-start items-center gap-1.5 text-sm font-bold px-3 py-1.5 rounded-full text-white"
+                style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)' }}
+              >
+                {t.montant}
+              </div>
+
+              <p className="text-[#1A1A18] text-sm leading-relaxed flex-1 italic" style={{ lineHeight: 1.7 }}>
+                "{t.quote}"
+              </p>
+              <div>
+                <div className="font-semibold text-[#1A1A18] text-sm">{t.nom}</div>
+                <div className="text-[#6B6860] text-xs mt-0.5">{t.titre}</div>
               </div>
             </FadeUp>
           ))}
@@ -469,17 +571,23 @@ function FaqItem({ item, index }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <FadeUp delay={index * 0.06}>
-      <div className="apple-card overflow-hidden">
+    <FadeUp delay={index * 0.05}>
+      <div
+        className="overflow-hidden"
+        style={{
+          borderBottom: '1px solid rgba(26,26,24,0.10)',
+        }}
+      >
         <button
           onClick={() => setOpen(!open)}
-          className="w-full flex items-center justify-between px-6 py-5 text-left"
+          className="w-full flex items-center justify-between px-2 py-5 text-left"
         >
-          <span className="font-semibold text-[#1D1D1F] text-sm pr-4">{item.q}</span>
+          <span className="font-semibold text-[#1A1A18] text-sm pr-4">{item.q}</span>
           <motion.span
             animate={{ rotate: open ? 45 : 0 }}
             transition={{ duration: 0.25 }}
-            className="shrink-0 text-[#0071E3] text-xl leading-none"
+            className="shrink-0 text-xl leading-none font-light"
+            style={{ color: '#E8915A' }}
           >
             +
           </motion.span>
@@ -494,7 +602,7 @@ function FaqItem({ item, index }) {
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <div className="px-6 pb-5 text-sm text-[#6E6E73] leading-relaxed border-t border-[#D2D2D7] pt-4">
+              <div className="px-2 pb-5 text-sm text-[#6B6860] leading-relaxed" style={{ lineHeight: 1.7 }}>
                 {item.r}
               </div>
             </motion.div>
@@ -507,15 +615,21 @@ function FaqItem({ item, index }) {
 
 function Faq() {
   return (
-    <Section id="faq" className="py-24 px-6 bg-[#F5F5F7]">
+    <Section id="faq" className="py-24 px-6" style={{ background: '#EDEAE3' }}>
       <div className="max-w-2xl mx-auto">
         <FadeUp className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#1D1D1F]">
+          <h2
+            className="font-bold text-[#1A1A18]"
+            style={{ fontSize: 'clamp(28px, 4vw, 52px)', letterSpacing: '-0.02em' }}
+          >
             Les questions qu'on nous pose tout le temps.
           </h2>
         </FadeUp>
 
-        <div className="space-y-3">
+        <div
+          className="vectra-card px-6 py-2"
+          style={{ borderRadius: '20px' }}
+        >
           {FAQ_ITEMS.map((item, i) => (
             <FaqItem key={item.q} item={item} index={i} />
           ))}
@@ -525,24 +639,34 @@ function Faq() {
   )
 }
 
-// ─── CTA Final ────────────────────────────────────────────────────────────────
+// ─── CTA Final (dark) ─────────────────────────────────────────────────────────
 
 function CtaFinal() {
   return (
-    <Section className="py-24 px-6 bg-white">
-      <FadeUp>
+    <Section className="py-24 px-6 overflow-hidden" style={{ background: '#111010' }}>
+      {/* Blob bleu décoratif */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-[-100px] left-[-100px] w-[600px] h-[600px] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(181,196,232,0.15) 0%, transparent 70%)',
+          filter: 'blur(80px)',
+        }}
+      />
+
+      <FadeUp className="relative z-10">
         <div className="max-w-3xl mx-auto text-center">
-          <div
-            className="apple-card px-8 py-16"
-            style={{ background: 'linear-gradient(160deg, #F0F7FF 0%, #FFFFFF 60%)', borderRadius: '24px' }}
-          >
-            <h2 className="text-3xl sm:text-5xl font-extrabold text-[#1D1D1F] leading-tight mb-5">
+          <div className="dark-card px-8 py-16">
+            <h2
+              className="font-extrabold text-white leading-tight mb-5"
+              style={{ fontSize: 'clamp(32px, 5vw, 56px)', letterSpacing: '-0.02em' }}
+            >
               Votre prochain investissement<br />
               est peut-être{' '}
               <span className="gradient-text">déjà financé.</span>
             </h2>
 
-            <p className="text-[#6E6E73] text-base sm:text-lg leading-relaxed mb-10 max-w-xl mx-auto">
+            <p className="text-base sm:text-lg leading-relaxed mb-10 max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
               Découvrez en 2 minutes ce que l'État, votre région et l'Europe peuvent couvrir pour vous.
             </p>
 
@@ -550,7 +674,7 @@ function CtaFinal() {
               Lancer ma simulation →
             </a>
 
-            <p className="text-[#6E6E73] text-sm mt-6">
+            <p className="text-sm mt-6" style={{ color: 'rgba(255,255,255,0.35)' }}>
               Rejoignez les dirigeants qui ne laissent plus d'argent sur la table.
             </p>
           </div>
@@ -564,17 +688,20 @@ function CtaFinal() {
 
 function Footer() {
   return (
-    <footer className="py-8 px-6 border-t border-[#D2D2D7] bg-white">
+    <footer className="py-8 px-6" style={{ background: '#1A1A18' }}>
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#0071E3] to-[#5E5CE6] flex items-center justify-center">
+          <div
+            className="w-6 h-6 rounded-lg flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)' }}
+          >
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
             </svg>
           </div>
-          <span className="text-[#6E6E73] text-sm font-medium">SubventionPro</span>
+          <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>SubventionPro</span>
         </div>
-        <p className="text-[#6E6E73] text-xs text-center">
+        <p className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
           © 2026 SubventionPro · Simulation gratuite · Données confidentielles
         </p>
       </div>
@@ -586,7 +713,7 @@ function Footer() {
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Navbar />
       <Hero />
       <Stats />

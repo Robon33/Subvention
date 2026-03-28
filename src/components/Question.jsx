@@ -1,8 +1,28 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
+// --- Styles helpers ---
+const sel = (dark) =>
+  dark
+    ? { border: '2px solid #E8915A', background: 'linear-gradient(135deg, #E8915A, #D4724A)', color: '#FFFFFF' }
+    : undefined
+
+const selCls = (dark, selected) =>
+  selected
+    ? dark
+      ? ''
+      : 'border-navy bg-navy text-white'
+    : dark
+      ? ''
+      : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
+
+const unselStyle = (dark) =>
+  dark
+    ? { border: '2px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#FFFFFF' }
+    : undefined
+
 // --- Single choice ---
-function SingleChoice({ question, value, onChange }) {
+function SingleChoice({ question, value, onChange, dark = false }) {
   return (
     <div className="grid gap-3">
       {question.options.map((opt) => {
@@ -11,11 +31,8 @@ function SingleChoice({ question, value, onChange }) {
           <button
             key={opt.value}
             onClick={() => onChange(opt.value)}
-            className={`w-full text-left px-5 py-4 rounded-xl border-2 transition-all duration-150 flex items-center gap-3 group
-              ${selected
-                ? 'border-navy bg-navy text-white'
-                : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-              }`}
+            className={`w-full text-left px-5 py-4 rounded-xl border-2 transition-all duration-150 flex items-center gap-3 group ${selCls(dark, selected)}`}
+            style={selected ? sel(dark) : unselStyle(dark)}
           >
             {opt.icon && (
               <span className="text-xl shrink-0">{opt.icon}</span>
@@ -23,7 +40,10 @@ function SingleChoice({ question, value, onChange }) {
             <span className="flex flex-col">
               <span className="font-medium text-sm leading-snug">{opt.label}</span>
               {opt.sublabel && (
-                <span className={`text-xs mt-0.5 ${selected ? 'text-blue-200' : 'text-gray-400'}`}>
+                <span
+                  className="text-xs mt-0.5"
+                  style={{ color: selected ? 'rgba(255,255,255,0.7)' : dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}
+                >
                   {opt.sublabel}
                 </span>
               )}
@@ -43,7 +63,7 @@ function SingleChoice({ question, value, onChange }) {
 }
 
 // --- Multiple choice ---
-function MultipleChoice({ question, value = [], onChange, onNext }) {
+function MultipleChoice({ question, value = [], onChange, onNext, dark = false }) {
   const toggle = (v) => {
     const next = value.includes(v) ? value.filter((x) => x !== v) : [...value, v]
     onChange(next)
@@ -58,17 +78,17 @@ function MultipleChoice({ question, value = [], onChange, onNext }) {
             <button
               key={opt.value}
               onClick={() => toggle(opt.value)}
-              className={`w-full text-left px-4 py-4 rounded-xl border-2 transition-all duration-150 flex items-center gap-3
-                ${selected
-                  ? 'border-navy bg-navy text-white'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                }`}
+              className={`w-full text-left px-4 py-4 rounded-xl border-2 transition-all duration-150 flex items-center gap-3 ${selCls(dark, selected)}`}
+              style={selected ? sel(dark) : unselStyle(dark)}
             >
               {opt.icon && <span className="text-lg shrink-0">{opt.icon}</span>}
               <span className="flex flex-col">
                 <span className="font-medium text-sm leading-snug">{opt.label}</span>
                 {opt.sublabel && (
-                  <span className={`text-xs mt-0.5 ${selected ? 'text-blue-200' : 'text-gray-400'}`}>
+                  <span
+                    className="text-xs mt-0.5"
+                    style={{ color: selected ? 'rgba(255,255,255,0.7)' : dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}
+                  >
                     {opt.sublabel}
                   </span>
                 )}
@@ -87,8 +107,9 @@ function MultipleChoice({ question, value = [], onChange, onNext }) {
       <button
         onClick={onNext}
         disabled={!value || value.length === 0}
-        className="mt-2 w-full sm:w-auto sm:self-start px-8 py-3.5 bg-navy text-white font-semibold rounded-xl
-          hover:bg-opacity-90 active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+        className="mt-2 w-full sm:w-auto sm:self-start px-8 py-3.5 font-semibold rounded-full
+          active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed text-white"
+        style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)', boxShadow: '0 4px 16px rgba(232,145,90,0.35)' }}
       >
         Continuer →
       </button>
@@ -97,23 +118,38 @@ function MultipleChoice({ question, value = [], onChange, onNext }) {
 }
 
 // --- Region select ---
-function RegionSelect({ value, onChange, options, onNext }) {
+function RegionSelect({ value, onChange, options, onNext, dark = false }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="relative">
         <select
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full appearance-none border-2 border-gray-200 rounded-xl px-5 py-4 text-gray-700 font-medium
-            bg-white focus:outline-none focus:border-navy transition-colors duration-150 pr-10 cursor-pointer"
+          className="w-full appearance-none rounded-xl px-5 py-4 font-medium
+            focus:outline-none transition-colors duration-150 pr-10 cursor-pointer border-2"
+          style={
+            dark
+              ? {
+                  background: 'rgba(255,255,255,0.08)',
+                  borderColor: 'rgba(255,255,255,0.15)',
+                  color: '#FFFFFF',
+                }
+              : {
+                  background: '#FFFFFF',
+                  borderColor: '#E5E7EB',
+                  color: '#374151',
+                }
+          }
         >
           <option value="" disabled>Sélectionnez votre région…</option>
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option key={opt.value} value={opt.value} style={{ background: dark ? '#1A1A18' : '#FFFFFF', color: dark ? '#FFFFFF' : '#374151' }}>
+              {opt.label}
+            </option>
           ))}
         </select>
         <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center">
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </div>
@@ -121,8 +157,9 @@ function RegionSelect({ value, onChange, options, onNext }) {
       <button
         onClick={onNext}
         disabled={!value}
-        className="w-full sm:w-auto sm:self-start px-8 py-3.5 bg-navy text-white font-semibold rounded-xl
-          hover:bg-opacity-90 active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+        className="w-full sm:w-auto sm:self-start px-8 py-3.5 font-semibold rounded-full
+          active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed text-white"
+        style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)', boxShadow: '0 4px 16px rgba(232,145,90,0.35)' }}
       >
         Continuer →
       </button>
@@ -131,9 +168,13 @@ function RegionSelect({ value, onChange, options, onNext }) {
 }
 
 // --- Lead form ---
-function LeadForm({ value = {}, onChange, onNext }) {
+function LeadForm({ value = {}, onChange, onNext, dark = false }) {
   const update = (key, val) => onChange({ ...value, [key]: val })
   const valid = value.prenom?.trim() && value.email?.includes('@')
+
+  const inputStyle = dark
+    ? { background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.15)', color: '#FFFFFF' }
+    : { background: '#FFFFFF', borderColor: '#E5E7EB', color: '#374151' }
 
   return (
     <div className="flex flex-col gap-4">
@@ -142,25 +183,34 @@ function LeadForm({ value = {}, onChange, onNext }) {
         placeholder="Votre prénom"
         value={value.prenom || ''}
         onChange={(e) => update('prenom', e.target.value)}
-        className="w-full border-2 border-gray-200 rounded-xl px-5 py-4 text-gray-700 font-medium
-          focus:outline-none focus:border-navy transition-colors duration-150 placeholder-gray-300"
+        className="w-full border-2 rounded-xl px-5 py-4 font-medium
+          focus:outline-none transition-colors duration-150"
+        style={{
+          ...inputStyle,
+          '::placeholder': { color: dark ? 'rgba(255,255,255,0.3)' : '#D1D5DB' },
+        }}
       />
       <input
         type="email"
         placeholder="Votre adresse email"
         value={value.email || ''}
         onChange={(e) => update('email', e.target.value)}
-        className="w-full border-2 border-gray-200 rounded-xl px-5 py-4 text-gray-700 font-medium
-          focus:outline-none focus:border-navy transition-colors duration-150 placeholder-gray-300"
+        className="w-full border-2 rounded-xl px-5 py-4 font-medium
+          focus:outline-none transition-colors duration-150"
+        style={inputStyle}
       />
-      <p className="text-xs text-gray-400 leading-relaxed">
+      <p className="text-xs leading-relaxed" style={{ color: dark ? 'rgba(255,255,255,0.35)' : '#9CA3AF' }}>
         Vos données sont confidentielles et ne seront jamais revendues.
       </p>
       <button
         onClick={onNext}
         disabled={!valid}
-        className="w-full sm:w-auto sm:self-start px-8 py-4 bg-cta text-white font-bold rounded-xl text-base
-          hover:bg-opacity-90 active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-green-200"
+        className="w-full sm:w-auto sm:self-start px-8 py-4 font-bold rounded-full text-base text-white
+          active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+        style={{
+          background: 'linear-gradient(135deg, #E8915A, #D4724A)',
+          boxShadow: '0 4px 16px rgba(232,145,90,0.35)',
+        }}
       >
         Voir mes subventions →
       </button>
@@ -175,7 +225,7 @@ const variants = {
   exit: (dir) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
 }
 
-export default function Question({ question, value, onChange, onNext, onBack, direction, showBack }) {
+export default function Question({ question, value, onChange, onNext, onBack, direction, showBack, dark = false }) {
   return (
     <motion.div
       key={question.id}
@@ -189,33 +239,44 @@ export default function Question({ question, value, onChange, onNext, onBack, di
     >
       {/* Titre */}
       <div className="mb-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-navy leading-tight mb-2">
+        <h2
+          className="text-2xl sm:text-3xl font-bold leading-tight mb-2"
+          style={{ color: dark ? '#FFFFFF' : '#1A1A18' }}
+        >
           {question.titre}
         </h2>
         {question.soustitre && (
-          <p className="text-gray-500 text-base leading-relaxed">{question.soustitre}</p>
+          <p
+            className="text-base leading-relaxed"
+            style={{ color: dark ? 'rgba(255,255,255,0.55)' : '#6B7280' }}
+          >
+            {question.soustitre}
+          </p>
         )}
       </div>
 
       {/* Contenu selon le type */}
       {question.type === 'single' && (
-        <SingleChoice question={question} value={value} onChange={onChange} />
+        <SingleChoice question={question} value={value} onChange={onChange} dark={dark} />
       )}
       {question.type === 'multiple' && (
-        <MultipleChoice question={question} value={value} onChange={onChange} onNext={onNext} />
+        <MultipleChoice question={question} value={value} onChange={onChange} onNext={onNext} dark={dark} />
       )}
       {question.type === 'select' && (
-        <RegionSelect options={question.options} value={value} onChange={onChange} onNext={onNext} />
+        <RegionSelect options={question.options} value={value} onChange={onChange} onNext={onNext} dark={dark} />
       )}
       {question.type === 'lead' && (
-        <LeadForm value={value} onChange={onChange} onNext={onNext} />
+        <LeadForm value={value} onChange={onChange} onNext={onNext} dark={dark} />
       )}
 
       {/* Navigation retour */}
       {showBack && (
         <button
           onClick={onBack}
-          className="mt-6 flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors duration-150"
+          className="mt-6 flex items-center gap-1.5 text-sm transition-colors duration-150"
+          style={{ color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}
+          onMouseEnter={e => e.currentTarget.style.color = dark ? '#FFFFFF' : '#4B5563'}
+          onMouseLeave={e => e.currentTarget.style.color = dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF'}
         >
           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />

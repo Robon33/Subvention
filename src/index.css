@@ -13,79 +13,86 @@
   }
 
   body {
-    @apply font-sans text-[#1D1D1F] bg-white;
+    @apply font-sans;
+    background-color: #F5F0E8;
+    color: #1A1A18;
   }
 }
 
-/* ─── Background principal ──────────────────────────────────────────────────── */
+/* ─── Vectra card (fond clair) ───────────────────────────────────────────────── */
 
-.light-bg {
-  background-color: #F5F5F7;
-}
-
-/* ─── Apple card ────────────────────────────────────────────────────────────── */
-
-.apple-card {
+.vectra-card {
   background: #FFFFFF;
-  border: 1px solid #D2D2D7;
-  border-radius: 18px;
-  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(26, 26, 24, 0.07);
+  border-radius: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
-.apple-card:hover {
-  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.05);
+.vectra-card:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 16px 40px rgba(0, 0, 0, 0.09);
 }
 
-/* ─── Apple navbar ──────────────────────────────────────────────────────────── */
+/* ─── Dark glass card ────────────────────────────────────────────────────────── */
 
-.apple-nav {
-  background: rgba(255, 255, 255, 0.85);
+.dark-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 24px;
+}
+
+/* ─── Vectra navbar ──────────────────────────────────────────────────────────── */
+
+.vectra-nav {
+  background: rgba(245, 240, 232, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid #D2D2D7;
+  border-bottom: 1px solid rgba(26, 26, 24, 0.08);
 }
 
-/* ─── Apple pill badge ──────────────────────────────────────────────────────── */
+/* ─── Vectra pill / badge ────────────────────────────────────────────────────── */
 
-.apple-pill {
-  background: rgba(0, 113, 227, 0.08);
-  border: 1px solid rgba(0, 113, 227, 0.18);
+.vectra-pill {
+  background: #E0D9CE;
   border-radius: 999px;
-  padding: 0.35rem 1rem;
-  color: #0071E3;
+  padding: 0.4rem 1rem;
+  color: #6B6860;
   font-size: 0.8rem;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-/* ─── Gradient text bleu Apple ──────────────────────────────────────────────── */
+/* ─── Gradient text (chaud orange) ──────────────────────────────────────────── */
 
 .gradient-text {
-  background: linear-gradient(135deg, #0071E3 0%, #5E5CE6 100%);
+  background: linear-gradient(135deg, #E8915A 0%, #D4724A 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ─── CTA Button Apple bleu ─────────────────────────────────────────────────── */
+/* ─── CTA Button orange gradient ─────────────────────────────────────────────── */
 
 .btn-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, #147CE5 0%, #0071E3 100%);
+  background: linear-gradient(135deg, #E8915A 0%, #D4724A 100%);
   color: #FFFFFF;
-  font-weight: 700;
-  border-radius: 14px;
-  padding: 0.75rem 1.5rem;
-  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 100px;
+  padding: 14px 28px;
+  font-size: 0.95rem;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.30);
+  box-shadow: 0 4px 16px rgba(232, 145, 90, 0.35);
 }
 
 .btn-cta:hover {
-  background: linear-gradient(180deg, #1A87F5 0%, #0077ED 100%);
   transform: scale(1.02);
-  box-shadow: 0 6px 24px rgba(0, 113, 227, 0.38);
+  box-shadow: 0 6px 28px rgba(232, 145, 90, 0.50);
 }
 
 .btn-cta:active {
@@ -93,44 +100,38 @@
 }
 
 .btn-cta-lg {
-  padding: 1rem 2rem;
+  padding: 16px 32px;
   font-size: 1rem;
-  border-radius: 16px;
 }
 
-/* ─── Ghost Button ──────────────────────────────────────────────────────────── */
+/* ─── Ghost Button ───────────────────────────────────────────────────────────── */
 
 .btn-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: transparent;
-  color: #0071E3;
+  color: #1A1A18;
   font-weight: 600;
-  border-radius: 14px;
-  border: 1.5px solid #D2D2D7;
+  border-radius: 100px;
+  border: 1.5px solid rgba(26, 26, 24, 0.20);
+  padding: 14px 28px;
+  font-size: 0.95rem;
   transition: all 0.2s ease;
 }
 
 .btn-ghost:hover {
-  background: #F5F5F7;
-  border-color: #0071E3;
-  color: #0071E3;
+  background: rgba(26, 26, 24, 0.05);
+  border-color: rgba(26, 26, 24, 0.35);
 }
 
-/* ─── Hover lift ────────────────────────────────────────────────────────────── */
+/* ─── Hover lift ─────────────────────────────────────────────────────────────── */
 
 .hover-lift {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
-}
-
-/* ─── Simulateur inline (override min-h-screen) ─────────────────────────────── */
-
-.sim-inline .sim-full {
-  min-height: unset;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06), 0 20px 48px rgba(0, 0, 0, 0.10);
 }

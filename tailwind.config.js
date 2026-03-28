@@ -7,8 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        navy: "#1B2E4B",
-        cta: "#2ECC71",
+        navy: "#1A1A18",
+        cta: "#4CAF7D",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
