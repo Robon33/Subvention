@@ -32,7 +32,7 @@ export default async function handler(req, res) {
   if (siren && siren.length === 9) {
     params.set('siren', siren)
   } else {
-    if (ape) params.set('ape', ape)
+    params.set('ape', ape || 'A') // fallback APE générique
     if (departement) params.set('departement', departement)
   }
 
