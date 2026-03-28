@@ -37,19 +37,8 @@ function mapSubcategories(subcategories = []) {
   return [...new Set(mapped)]
 }
 
-export async function fetchAidesTerritoriales(region) {
-  const perimeter = region ? REGION_MAP[region] : null
-  const params = new URLSearchParams({ format: 'json', page_size: '50' })
-  if (perimeter) params.set('perimeter', perimeter)
-
-  const res = await fetch(
-    `https://aides-territoires.beta.gouv.fr/api/aids/?${params}`,
-    { headers: { Accept: 'application/json' } }
-  )
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-
-  const data = await res.json()
-  return (data.results || []).map((aid) => ({
+function parseResults(results) {
+  return results.map((aid) => ({
     id: aid.slug,
     nom: aid.name,
     description: aid.description?.substring(0, 200),
@@ -63,4 +52,34 @@ export async function fetchAidesTerritoriales(region) {
     source: aid.url,
     _scraped: true,
   }))
+}
+
+async function fetchWithUrl(url) {
+  const res = await fetch(url, { headers: { Accept: 'application/json' } })
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  const data = await res.json()
+  return data.results || []
+}
+
+export async function fetchAidesTerritoriales(region) {
+  const perimeter = region ? REGION_MAP[region] : null
+  const params = new URLSearchParams({ format: 'json', page_size: '50' })
+  if (perimeter) params.set('perimeter', perimeter)
+
+  const directUrl = `https://aides-territoires.beta.gouv.fr/api/aids/?${params}`
+
+  try {
+    const results = await fetchWithUrl(directUrl)
+    return parseResults(results)
+  } catch (err) {
+    console.warn('Aides-territoires direct échoué, retry via proxy', err)
+    try {
+      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(directUrl)}`
+      const results = await fetchWithUrl(proxyUrl)
+      return parseResults(results)
+    } catch (err2) {
+      console.warn('Aides-territoires indisponible, fallback JSON', err2)
+      return []
+    }
+  }
 }

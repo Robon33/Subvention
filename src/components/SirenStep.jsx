@@ -4,19 +4,37 @@ import { motion, AnimatePresence } from 'framer-motion'
 // ─── Helpers de mapping ──────────────────────────────────────────────────────
 
 function mapNAF(code) {
-  const c = (code || '').substring(0, 2)
+  const c = (code || '').replace('.', '').substring(0, 2)
   if (c === '56') return 'restauration'
   if (c === '47') return 'commerce'
-  if (['43', '41', '42'].includes(c)) return 'artisanat'
   if (c === '55') return 'hotellerie'
+  if (c === '41') return 'batiment'
+  if (['43', '42'].includes(c)) return 'artisanat'
+  if (['86', '87'].includes(c)) return 'sante'
   return 'services'
 }
 
 function mapEffectifs(tranche) {
-  if (['00', '01'].includes(tranche)) return 'micro'
-  if (['02', '03'].includes(tranche)) return 'tpe'
+  if (!tranche || tranche === '00') return 'micro'
+  if (['01', '02'].includes(tranche)) return 'tpe'
   if (['11', '12', '21'].includes(tranche)) return 'pme'
   return null
+}
+
+const REGION_CODE_MAP = {
+  '75': 'nouvelle_aquitaine',
+  '11': 'ile_de_france',
+  '84': 'auvergne_rhone_alpes',
+  '76': 'occitanie',
+  '32': 'hauts_de_france',
+  '44': 'grand_est',
+  '93': 'paca',
+  '53': 'bretagne',
+  '52': 'pays_de_la_loire',
+  '28': 'normandie',
+  '27': 'bourgogne_franche_comte',
+  '24': 'centre_val_de_loire',
+  '94': 'corse',
 }
 
 function mapAnciennete(dateCreation) {
@@ -32,6 +50,8 @@ const SECTEUR_LABEL = {
   commerce:     'Commerce',
   artisanat:    'Artisanat',
   hotellerie:   'Hôtellerie',
+  batiment:     'Bâtiment',
+  sante:        'Santé',
   services:     'Services',
 }
 
@@ -59,23 +79,22 @@ export default function SirenStep({ onConfirm, onSkip, dark = false }) {
     setPhase('loading')
     try {
       const res = await fetch(
-        `https://api.insee.fr/entreprises/sirene/V3.11/siren/${siren}`,
+        `https://recherche-entreprises.api.gouv.fr/search?q=${siren}&per_page=1`,
         { headers: { Accept: 'application/json' } }
       )
       if (!res.ok) throw new Error(`${res.status}`)
       const data = await res.json()
-      const ul = data.uniteLegale
+      const r = data.results?.[0]
+      if (!r) throw new Error('not found')
 
-      const nom = ul.denominationUniteLegale || ul.sigleUniteLegale || `SIREN ${siren}`
-      const naf = ul.activitePrincipaleUniteLegale || ''
-      const dateCreation = ul.dateCreationUniteLegale || ''
+      const nom = r.nom_complet || `SIREN ${siren}`
+      const secteur = mapNAF(r.activite_principale || '')
+      const taille = mapEffectifs(r.tranche_effectif_salarie)
+      const anciennete = mapAnciennete(r.date_creation || '')
+      const anneeCreation = r.date_creation ? r.date_creation.substring(0, 4) : null
+      const region = REGION_CODE_MAP[r.siege?.region] || null
 
-      const secteur = mapNAF(naf)
-      const taille = mapEffectifs(ul.trancheEffectifsUniteLegale)
-      const anciennete = mapAnciennete(dateCreation)
-      const anneeCreation = dateCreation ? dateCreation.substring(0, 4) : null
-
-      setEntreprise({ nom, secteur, taille, anciennete, anneeCreation })
+      setEntreprise({ nom, secteur, taille, anciennete, anneeCreation, region })
       setPhase('found')
     } catch {
       setErrorMsg('Entreprise introuvable. Vérifiez votre SIREN ou continuez manuellement.')
@@ -88,6 +107,7 @@ export default function SirenStep({ onConfirm, onSkip, dark = false }) {
     if (entreprise.secteur)    prefilled.secteur    = entreprise.secteur
     if (entreprise.taille)     prefilled.taille     = entreprise.taille
     if (entreprise.anciennete) prefilled.anciennete = entreprise.anciennete
+    if (entreprise.region)     prefilled.region     = entreprise.region
     onConfirm(prefilled)
   }
 
