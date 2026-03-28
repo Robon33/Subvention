@@ -36,7 +36,7 @@ function Resultats({ reponses, onRestart, dark = false, aidesExternes = [] }) {
   useEffect(() => {
     const payload = {
       email: reponses.email || null,
-      siren: reponses.siren || null,
+      siren: reponses.siren || reponses.sirenSaisi || null,
       nomEntreprise: reponses.nomEntreprise || null,
       secteur: reponses.secteur || null,
       taille: reponses.taille || null,

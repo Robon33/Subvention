@@ -42,6 +42,7 @@ export default function SirenStep({ onConfirm, onSkip, dark = false }) {
       if (data.entreprise) {
         setEntreprise({
           ...data.entreprise,
+          siren: siren, // SIREN saisi par l'utilisateur (garanti 9 chiffres)
           nomEntreprise: data.entreprise.nom,
           idr: data.idr,
         })

@@ -53,7 +53,7 @@ export const questions = [
       { label: "TPE",                    sublabel: "1 à 9 salariés",         value: "tpe" },
       { label: "PME",                    sublabel: "10 à 49 salariés",       value: "pme" },
     ],
-    condition: (r) => !r.taille,
+    condition: (r) => !r.taille || r.anciennete === 'moins_1_an',
   },
 
   // Q3 — anciennete (skipped if pre-filled or taille=creation)
