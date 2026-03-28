@@ -79,7 +79,8 @@ function parseMontantHTML(html) {
 function mapEtablissement(etab) {
   if (!etab) return null
 
-  const naf = etab.ape || ''
+  const nafRaw = etab.ape
+  const naf = typeof nafRaw === 'string' ? nafRaw : (nafRaw?.code || '')
   const code2 = naf.replace('.', '').substring(0, 2)
   const secteurMap = {
     '56': 'restauration', '47': 'commerce',
