@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// Mapping côté serveur (/api/sirene.js) — labels pour l'affichage uniquement
+// Mapping côté serveur (/api/aides.js) — labels pour l'affichage uniquement
 
 const SECTEUR_LABEL = {
   restauration: 'Restauration',
@@ -37,23 +37,19 @@ export default function SirenStep({ onConfirm, onSkip, dark = false }) {
     setPhase('loading')
     try {
       const res = await fetch(`/api/aides?siren=${siren}&projets=materiel`)
-      const text = await res.text()
-      console.log('Aides/siren raw response:', res.status, text)
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${text}`)
-      const data = JSON.parse(text)
-      if (data.error) throw new Error(data.error)
+      const data = await res.json()
 
-      // Entreprise extraite depuis les-aides.fr etablissement
-      const ent = data.entreprise
-      if (!ent || !ent.nom) {
-        // Fallback : pas d'établissement renvoyé, construire un profil minimal
-        throw new Error('Entreprise non trouvée')
+      if (data.entreprise) {
+        setEntreprise({
+          ...data.entreprise,
+          nomEntreprise: data.entreprise.nom,
+          idr: data.idr,
+        })
+        setPhase('found')
+      } else {
+        setErrorMsg('Entreprise non trouvée. Vérifiez votre SIREN.')
+        setPhase('error')
       }
-
-      // Stocker idr pour réutilisation future
-      ent._idr = data.idr
-      setEntreprise(ent)
-      setPhase('found')
     } catch (err) {
       console.error('Sirene error:', err)
       setErrorMsg('Entreprise introuvable. Vérifiez votre SIREN ou continuez manuellement.')
