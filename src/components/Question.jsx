@@ -167,6 +167,55 @@ function RegionSelect({ value, onChange, options, onNext, dark = false }) {
   )
 }
 
+// --- Email step (optionnel, avec bouton Passer) ---
+function EmailStep({ value = '', onChange, onNext, onSkip, dark = false }) {
+  const valid = typeof value === 'string' && value.includes('@') && value.includes('.')
+
+  const inputStyle = dark
+    ? { background: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.15)', color: '#FFFFFF' }
+    : { background: '#FFFFFF', borderColor: '#E5E7EB', color: '#374151' }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <input
+        type="email"
+        placeholder="votre@email.com"
+        value={value || ''}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && valid && onNext()}
+        className="w-full border-2 rounded-xl px-5 py-4 font-medium focus:outline-none transition-colors duration-150"
+        style={inputStyle}
+        autoComplete="email"
+      />
+      <button
+        onClick={onNext}
+        disabled={!valid}
+        className="w-full sm:w-auto sm:self-start px-8 py-3.5 font-semibold rounded-full
+          active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+        style={{
+          background: 'linear-gradient(135deg, #FF9270, #FFE989)',
+          boxShadow: '0 4px 16px rgba(255,146,112,0.35)',
+          color: '#010101',
+        }}
+      >
+        Voir mes résultats →
+      </button>
+      <button
+        onClick={onSkip}
+        style={{
+          background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+          fontSize: 14, color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF',
+          transition: 'color 0.15s ease', textAlign: 'left',
+        }}
+        onMouseEnter={e => e.currentTarget.style.color = dark ? '#FFFFFF' : '#4B5563'}
+        onMouseLeave={e => e.currentTarget.style.color = dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF'}
+      >
+        Passer
+      </button>
+    </div>
+  )
+}
+
 // --- Lead form ---
 function LeadForm({ value = {}, onChange, onNext, dark = false }) {
   const update = (key, val) => onChange({ ...value, [key]: val })
@@ -226,7 +275,7 @@ const variants = {
   exit: (dir) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
 }
 
-export default function Question({ question, value, onChange, onNext, onBack, direction, showBack, dark = false }) {
+export default function Question({ question, value, onChange, onNext, onBack, onSkip, direction, showBack, dark = false }) {
   return (
     <motion.div
       key={question.id}
@@ -265,6 +314,9 @@ export default function Question({ question, value, onChange, onNext, onBack, di
       )}
       {question.type === 'select' && (
         <RegionSelect options={question.options} value={value} onChange={onChange} onNext={onNext} dark={dark} />
+      )}
+      {question.type === 'email' && (
+        <EmailStep value={value} onChange={onChange} onNext={onNext} onSkip={onSkip} dark={dark} />
       )}
       {question.type === 'lead' && (
         <LeadForm value={value} onChange={onChange} onNext={onNext} dark={dark} />

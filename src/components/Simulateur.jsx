@@ -1,15 +1,20 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { questions } from '../data/questions'
 import { calculerEligibilite, calculerMontantTotal } from '../data/eligibilite'
+import { fetchAidesTerritoriales } from '../data/fetchAides'
 import { useCountUp } from '../hooks/useCountUp'
 import ProgressBar from './ProgressBar'
 import Question from './Question'
 import ResultatCard from './ResultatCard'
+import SirenStep from './SirenStep'
 
 // --- Page résultats ---
-function Resultats({ reponses, onRestart, dark = false }) {
-  const dispositifsEligibles = useMemo(() => calculerEligibilite(reponses), [reponses])
+function Resultats({ reponses, onRestart, dark = false, aidesExternes = [] }) {
+  const dispositifsEligibles = useMemo(
+    () => calculerEligibilite(reponses, aidesExternes),
+    [reponses, aidesExternes]
+  )
   const montantTotal = useMemo(() => calculerMontantTotal(dispositifsEligibles), [dispositifsEligibles])
   const countedTotal = useCountUp(montantTotal, 1500, true)
 
@@ -154,8 +159,31 @@ export default function Simulateur({ inline = false }) {
 
   const [reponses, setReponses] = useState({})
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [phase, setPhase] = useState('quiz') // 'quiz' | 'results'
+  const [phase, setPhase] = useState('siren') // 'siren' | 'quiz' | 'results'
   const [direction, setDirection] = useState(1)
+  const [aidesExternes, setAidesExternes] = useState([])
+
+  // Fetch aides au montage (silencieux en cas d'erreur)
+  useEffect(() => {
+    fetchAidesTerritoriales(null)
+      .then(setAidesExternes)
+      .catch(() => {})
+  }, [])
+
+  // ── Étape SIREN ──────────────────────────────────────────────────────────
+
+  const handleSirenConfirm = (prefilled) => {
+    setReponses((prev) => ({ ...prev, ...prefilled }))
+    setPhase('quiz')
+  }
+
+  // "Je n'ai pas encore de SIREN" → mode création
+  const handleSirenSkip = () => {
+    setReponses((prev) => ({ ...prev, taille: 'creation' }))
+    setPhase('quiz')
+  }
+
+  // ── Quiz ─────────────────────────────────────────────────────────────────
 
   const applicableQuestions = useMemo(
     () => questions.filter((q) => !q.condition || q.condition(reponses)),
@@ -201,34 +229,49 @@ export default function Simulateur({ inline = false }) {
   }
 
   const handleNext = () => advance()
+  const handleSkip = () => advance()
 
   const handleRestart = () => {
     setReponses({})
     setCurrentIndex(0)
-    setPhase('quiz')
+    setPhase('siren')
     setDirection(1)
+  }
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  const wrapperStyle = {
+    padding: '40px 16px',
+    ...(inline ? {} : { minHeight: '100vh', background: '#F7F7F7' }),
   }
 
   if (phase === 'results') {
     return (
-      <div style={{ padding: '40px 16px', ...(inline ? {} : { minHeight: '100vh', background: '#F7F7F7' }) }}>
-        <Resultats reponses={reponses} onRestart={handleRestart} dark={dark} />
+      <div style={wrapperStyle}>
+        <Resultats
+          reponses={reponses}
+          onRestart={handleRestart}
+          dark={dark}
+          aidesExternes={aidesExternes}
+        />
       </div>
     )
   }
 
+  const headerStyle = {
+    borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.10)' : 'rgba(1,1,1,0.08)'}`,
+    padding: '16px',
+    ...(dark ? { background: 'transparent' } : { background: '#FFFFFF', position: 'sticky', top: 0, zIndex: 10 }),
+  }
+
+  const showProgressBar = phase === 'quiz'
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', ...(inline ? {} : { minHeight: '100vh', background: '#FFFFFF' }) }}>
       {/* Header */}
-      <header
-        style={{
-          borderBottom: `1px solid ${dark ? 'rgba(255,255,255,0.10)' : 'rgba(1,1,1,0.08)'}`,
-          padding: '16px',
-          ...(dark ? { background: 'transparent' } : { background: '#FFFFFF', position: 'sticky', top: 0, zIndex: 10 }),
-        }}
-      >
+      <header style={headerStyle}>
         <div style={{ maxWidth: '480px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: showProgressBar ? '12px' : 0 }}>
             <div style={{
               width: 28, height: 28, borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center',
               background: dark ? 'linear-gradient(135deg, #FF9270, #FFE989)' : '#010101',
@@ -241,28 +284,40 @@ export default function Simulateur({ inline = false }) {
               Simulateur de subventions
             </span>
           </div>
-          <ProgressBar current={currentIndex + 1} total={applicableQuestions.length} dark={dark} />
+          {showProgressBar && (
+            <ProgressBar current={currentIndex + 1} total={applicableQuestions.length} dark={dark} />
+          )}
         </div>
       </header>
 
       {/* Main */}
       <main style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '40px 16px' }}>
         <div style={{ width: '100%', maxWidth: '480px', overflow: 'hidden' }}>
-          <AnimatePresence mode="wait" custom={direction}>
-            {currentQuestion && (
-              <Question
-                key={currentQuestion.id}
-                question={currentQuestion}
-                value={currentValue}
-                onChange={handleChange}
-                onNext={handleNext}
-                onBack={goBack}
-                direction={direction}
-                showBack={currentIndex > 0}
-                dark={dark}
-              />
-            )}
-          </AnimatePresence>
+
+          {/* Étape SIREN */}
+          {phase === 'siren' && (
+            <SirenStep onConfirm={handleSirenConfirm} onSkip={handleSirenSkip} dark={dark} />
+          )}
+
+          {/* Quiz */}
+          {phase === 'quiz' && (
+            <AnimatePresence mode="wait" custom={direction}>
+              {currentQuestion && (
+                <Question
+                  key={currentQuestion.id}
+                  question={currentQuestion}
+                  value={currentValue}
+                  onChange={handleChange}
+                  onNext={handleNext}
+                  onBack={goBack}
+                  onSkip={handleSkip}
+                  direction={direction}
+                  showBack={currentIndex > 0}
+                  dark={dark}
+                />
+              )}
+            </AnimatePresence>
+          )}
         </div>
       </main>
 

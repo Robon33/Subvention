@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-03-27T00:00:00.000Z",
+  "generatedAt": "2026-03-28T00:00:00.000Z",
   "source": "manual",
-  "total": 10,
+  "total": 11,
   "aides": [
     {
       "id": "investissement_materiel",
@@ -32,7 +32,7 @@
       "montantMin": 1000,
       "montantMax": 4000,
       "organismes": ["État", "France Travail"],
-      "tags": { "projets": ["recruter"], "tailles": [] },
+      "tags": { "projets": ["recruter_cdi"], "tailles": [] },
       "source": "https://travail-emploi.gouv.fr/",
       "_manual": true
     },
@@ -43,7 +43,7 @@
       "montantMin": 6000,
       "montantMax": 6000,
       "organismes": ["État"],
-      "tags": { "projets": ["recruter"], "tailles": [] },
+      "tags": { "projets": ["recruter_alternance"], "tailles": [] },
       "source": "https://travail-emploi.gouv.fr/formation-professionnelle/alternance/",
       "_manual": true
     },
@@ -54,7 +54,7 @@
       "montantMin": 2000,
       "montantMax": 15000,
       "organismes": ["France Travail"],
-      "tags": { "projets": ["recruter"], "tailles": ["tpe", "pme"] },
+      "tags": { "projets": ["former"], "tailles": ["tpe", "pme"] },
       "source": "https://travail-emploi.gouv.fr/",
       "_manual": true
     },
@@ -111,6 +111,17 @@
       "organismes": ["Chambre de Commerce", "Région"],
       "tags": { "projets": ["renover"], "tailles": [] },
       "source": "https://www.cci.fr/",
+      "_manual": true
+    },
+    {
+      "id": "export",
+      "nom": "Aide au développement international",
+      "description": "Financement de votre prospection et développement à l'export via Bpifrance Assurance Export.",
+      "montantMin": 5000,
+      "montantMax": 30000,
+      "organismes": ["Bpifrance", "Business France"],
+      "tags": { "projets": ["export"], "tailles": ["tpe", "pme"] },
+      "source": "https://www.bpifrance.fr/",
       "_manual": true
     }
   ]
