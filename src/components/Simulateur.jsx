@@ -163,17 +163,29 @@ export default function Simulateur({ inline = false }) {
   const [direction, setDirection] = useState(1)
   const [aidesExternes, setAidesExternes] = useState([])
 
-  // Fetch aides au montage (silencieux en cas d'erreur)
+  // Fetch aides dès qu'on a région/département + au moins 1 projet
   useEffect(() => {
-    fetchAidesTerritoriales(null)
-      .then(setAidesExternes)
-      .catch(() => {})
-  }, [])
+    const { siren, naf, departement, projets, region } = reponses
+    if ((departement || region) && projets?.length > 0) {
+      fetchAidesTerritoriales({ siren, ape: naf, departement, projets })
+        .then(setAidesExternes)
+    }
+  }, [reponses.projets, reponses.departement, reponses.siren])
 
   // ── Étape SIREN ──────────────────────────────────────────────────────────
 
-  const handleSirenConfirm = (prefilled) => {
-    setReponses((prev) => ({ ...prev, ...prefilled }))
+  const handleSirenConfirm = (data) => {
+    setReponses(prev => ({
+      ...prev,
+      secteur:      data.secteur,
+      taille:       data.taille,
+      anciennete:   data.anciennete,
+      region:       data.region,
+      siren:        data.siren,
+      naf:          data.naf,
+      departement:  data.departement,
+      nomEntreprise: data.nom,
+    }))
     setPhase('quiz')
   }
 

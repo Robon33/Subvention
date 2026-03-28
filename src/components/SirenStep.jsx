@@ -1,49 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-// ─── Helpers de mapping ──────────────────────────────────────────────────────
-
-function mapNAF(code) {
-  const c = (code || '').replace('.', '').substring(0, 2)
-  if (c === '56') return 'restauration'
-  if (c === '47') return 'commerce'
-  if (c === '55') return 'hotellerie'
-  if (c === '41') return 'batiment'
-  if (['43', '42'].includes(c)) return 'artisanat'
-  if (['86', '87'].includes(c)) return 'sante'
-  return 'services'
-}
-
-function mapEffectifs(tranche) {
-  if (!tranche || tranche === '00') return 'micro'
-  if (['01', '02'].includes(tranche)) return 'tpe'
-  if (['11', '12', '21'].includes(tranche)) return 'pme'
-  return null
-}
-
-const REGION_CODE_MAP = {
-  '75': 'nouvelle_aquitaine',
-  '11': 'ile_de_france',
-  '84': 'auvergne_rhone_alpes',
-  '76': 'occitanie',
-  '32': 'hauts_de_france',
-  '44': 'grand_est',
-  '93': 'paca',
-  '53': 'bretagne',
-  '52': 'pays_de_la_loire',
-  '28': 'normandie',
-  '27': 'bourgogne_franche_comte',
-  '24': 'centre_val_de_loire',
-  '94': 'corse',
-}
-
-function mapAnciennete(dateCreation) {
-  if (!dateCreation) return null
-  const years = (Date.now() - new Date(dateCreation).getTime()) / (365.25 * 24 * 60 * 60 * 1000)
-  if (years < 1) return 'moins_1_an'
-  if (years < 3) return '1_3_ans'
-  return 'plus_3_ans'
-}
+// Mapping côté serveur (/api/sirene.js) — labels pour l'affichage uniquement
 
 const SECTEUR_LABEL = {
   restauration: 'Restauration',
@@ -78,23 +36,11 @@ export default function SirenStep({ onConfirm, onSkip, dark = false }) {
     if (siren.length !== 9) return
     setPhase('loading')
     try {
-      const res = await fetch(
-        `https://recherche-entreprises.api.gouv.fr/search?q=${siren}&per_page=1`,
-        { headers: { Accept: 'application/json' } }
-      )
-      if (!res.ok) throw new Error(`${res.status}`)
+      const res = await fetch(`/api/sirene?siren=${siren}`)
       const data = await res.json()
-      const r = data.results?.[0]
-      if (!r) throw new Error('not found')
-
-      const nom = r.nom_complet || `SIREN ${siren}`
-      const secteur = mapNAF(r.activite_principale || '')
-      const taille = mapEffectifs(r.tranche_effectif_salarie)
-      const anciennete = mapAnciennete(r.date_creation || '')
-      const anneeCreation = r.date_creation ? r.date_creation.substring(0, 4) : null
-      const region = REGION_CODE_MAP[r.siege?.region] || null
-
-      setEntreprise({ nom, secteur, taille, anciennete, anneeCreation, region })
+      if (data.error) throw new Error(data.error)
+      // data = { nom, siren, naf, secteur, taille, anciennete, anneeCreation, region, departement }
+      setEntreprise(data)
       setPhase('found')
     } catch {
       setErrorMsg('Entreprise introuvable. Vérifiez votre SIREN ou continuez manuellement.')
@@ -103,12 +49,7 @@ export default function SirenStep({ onConfirm, onSkip, dark = false }) {
   }
 
   const handleConfirm = () => {
-    const prefilled = {}
-    if (entreprise.secteur)    prefilled.secteur    = entreprise.secteur
-    if (entreprise.taille)     prefilled.taille     = entreprise.taille
-    if (entreprise.anciennete) prefilled.anciennete = entreprise.anciennete
-    if (entreprise.region)     prefilled.region     = entreprise.region
-    onConfirm(prefilled)
+    onConfirm(entreprise)
   }
 
   const handleRetry = () => {
