@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 // --- Styles helpers ---
 const sel = (dark) =>
   dark
-    ? { border: '2px solid #E8915A', background: 'linear-gradient(135deg, #E8915A, #D4724A)', color: '#FFFFFF' }
+    ? { border: '2px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.2)', color: '#FFFFFF' }
     : undefined
 
 const selCls = (dark, selected) =>
@@ -18,7 +18,7 @@ const selCls = (dark, selected) =>
 
 const unselStyle = (dark) =>
   dark
-    ? { border: '2px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#FFFFFF' }
+    ? { border: '2px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.8)' }
     : undefined
 
 // --- Single choice ---
@@ -108,8 +108,8 @@ function MultipleChoice({ question, value = [], onChange, onNext, dark = false }
         onClick={onNext}
         disabled={!value || value.length === 0}
         className="mt-2 w-full sm:w-auto sm:self-start px-8 py-3.5 font-semibold rounded-full
-          active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed text-white"
-        style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)', boxShadow: '0 4px 16px rgba(232,145,90,0.35)' }}
+          active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+        style={{ background: 'linear-gradient(135deg, #FF9270, #FFE989)', boxShadow: '0 4px 16px rgba(255,146,112,0.35)', color: '#010101' }}
       >
         Continuer →
       </button>
@@ -143,7 +143,7 @@ function RegionSelect({ value, onChange, options, onNext, dark = false }) {
         >
           <option value="" disabled>Sélectionnez votre région…</option>
           {options.map((opt) => (
-            <option key={opt.value} value={opt.value} style={{ background: dark ? '#1A1A18' : '#FFFFFF', color: dark ? '#FFFFFF' : '#374151' }}>
+            <option key={opt.value} value={opt.value} style={{ background: dark ? '#010101' : '#FFFFFF', color: dark ? '#FFFFFF' : '#374151' }}>
               {opt.label}
             </option>
           ))}
@@ -158,8 +158,8 @@ function RegionSelect({ value, onChange, options, onNext, dark = false }) {
         onClick={onNext}
         disabled={!value}
         className="w-full sm:w-auto sm:self-start px-8 py-3.5 font-semibold rounded-full
-          active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed text-white"
-        style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)', boxShadow: '0 4px 16px rgba(232,145,90,0.35)' }}
+          active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
+        style={{ background: 'linear-gradient(135deg, #FF9270, #FFE989)', boxShadow: '0 4px 16px rgba(255,146,112,0.35)', color: '#010101' }}
       >
         Continuer →
       </button>
@@ -205,11 +205,12 @@ function LeadForm({ value = {}, onChange, onNext, dark = false }) {
       <button
         onClick={onNext}
         disabled={!valid}
-        className="w-full sm:w-auto sm:self-start px-8 py-4 font-bold rounded-full text-base text-white
+        className="w-full sm:w-auto sm:self-start px-8 py-4 font-bold rounded-full text-base
           active:scale-95 transition-all duration-150 disabled:opacity-30 disabled:cursor-not-allowed"
         style={{
-          background: 'linear-gradient(135deg, #E8915A, #D4724A)',
-          boxShadow: '0 4px 16px rgba(232,145,90,0.35)',
+          background: 'linear-gradient(135deg, #FF9270, #FFE989)',
+          boxShadow: '0 4px 16px rgba(255,146,112,0.35)',
+          color: '#010101',
         }}
       >
         Voir mes subventions →

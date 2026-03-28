@@ -10,11 +10,11 @@ const fadeUp = {
   visible: (delay = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, ease: 'easeOut', delay },
+    transition: { duration: 0.3, ease: 'easeOut', delay },
   }),
 }
 
-function FadeUp({ children, delay = 0, className = '', lift = false }) {
+function FadeUp({ children, delay = 0, className = '' }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
   return (
@@ -25,18 +25,17 @@ function FadeUp({ children, delay = 0, className = '', lift = false }) {
       animate={inView ? 'visible' : 'hidden'}
       custom={delay}
       variants={fadeUp}
-      whileHover={lift ? { y: -2, transition: { duration: 0.2 } } : undefined}
     >
       {children}
     </motion.div>
   )
 }
 
-function Section({ children, className = '', id }) {
+function Section({ children, className = '', id, style }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-80px' })
   return (
-    <section ref={ref} id={id} className={`relative ${className}`}>
+    <section ref={ref} id={id} className={`relative ${className}`} style={style}>
       <motion.div
         initial="hidden"
         animate={inView ? 'visible' : 'hidden'}
@@ -50,21 +49,20 @@ function Section({ children, className = '', id }) {
 
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 
-function IconDocument() {
+function IconDocument({ color = 'currentColor' }) {
   return (
-    <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-      <polyline points="10 9 9 9 8 9" />
+    <svg width="24" height="24" fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+      <rect x="5" y="2" width="14" height="20" rx="2" />
+      <line x1="9" y1="7" x2="15" y2="7" />
+      <line x1="9" y1="11" x2="15" y2="11" />
+      <line x1="9" y1="15" x2="13" y2="15" />
     </svg>
   )
 }
 
-function IconAlertTriangle() {
+function IconAlertTriangle({ color = 'currentColor' }) {
   return (
-    <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <svg width="24" height="24" fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
       <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
       <line x1="12" y1="9" x2="12" y2="13" />
       <line x1="12" y1="17" x2="12.01" y2="17" />
@@ -72,23 +70,15 @@ function IconAlertTriangle() {
   )
 }
 
-function IconPhone() {
+function IconPhone({ color = 'currentColor' }) {
   return (
-    <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <svg width="24" height="24" fill="none" stroke={color} strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
       <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 013 1.18 2 2 0 015 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L9.91 7.91a16 16 0 006.29 6.29l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z" />
     </svg>
   )
 }
 
-function IconZap() {
-  return (
-    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  )
-}
-
-// ─── Navbar ───────────────────────────────────────────────────────────────────
+// ─── Navbar pill ──────────────────────────────────────────────────────────────
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -99,42 +89,69 @@ function Navbar() {
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
+  const shadow = scrolled
+    ? '0 4px 30px rgba(0,0,0,0.14), 0 1px 6px rgba(0,0,0,0.08)'
+    : '0 2px 20px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06)'
+
   return (
-    <nav
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? 'vectra-nav py-3' : 'bg-transparent py-5'
-      }`}
-    >
-      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-        <a href="/" className="flex items-center gap-2.5">
-          <div
-            className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md"
-            style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)' }}
-          >
-            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <span className="font-bold text-[#1A1A18] text-base tracking-tight">SubventionPro</span>
+    <>
+      {/* Desktop — pill flottante */}
+      <nav
+        aria-label="Navigation principale"
+        className="hidden sm:flex"
+        style={{
+          position: 'fixed',
+          top: '16px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1000,
+          background: '#FFFFFF',
+          borderRadius: '100px',
+          padding: '6px 6px 6px 20px',
+          alignItems: 'center',
+          gap: '4px',
+          boxShadow: shadow,
+          whiteSpace: 'nowrap',
+          transition: 'box-shadow 0.3s ease',
+        }}
+      >
+        <a href="/" style={{ fontWeight: 700, color: '#010101', marginRight: '16px', fontSize: '15px', textDecoration: 'none' }}>
+          SubventionPro
         </a>
+        <a href="#comment-ca-marche" style={{ padding: '8px 16px', borderRadius: '100px', color: '#6B6B6B', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
+          Comment ça marche
+        </a>
+        <a href="#faq" style={{ padding: '8px 16px', borderRadius: '100px', color: '#6B6B6B', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
+          FAQ
+        </a>
+        <a href="#simulateur" style={{ padding: '10px 20px', background: '#010101', color: '#FFFFFF', borderRadius: '100px', fontSize: '14px', fontWeight: 600, textDecoration: 'none', marginLeft: '8px' }}>
+          Simuler gratuitement →
+        </a>
+      </nav>
 
-        <div className="hidden sm:flex items-center gap-8">
-          <a href="#comment-ca-marche" className="text-sm text-[#6B6860] hover:text-[#1A1A18] transition-colors duration-200">
-            Comment ça marche
-          </a>
-          <a href="#faq" className="text-sm text-[#6B6860] hover:text-[#1A1A18] transition-colors duration-200">
-            FAQ
-          </a>
-          <a href="#simulateur" className="btn-cta text-sm px-6 py-3">
-            Simuler gratuitement
-          </a>
-        </div>
-
-        <a href="#simulateur" className="sm:hidden btn-cta text-sm px-4 py-2.5">
+      {/* Mobile — barre pleine largeur */}
+      <nav
+        aria-label="Navigation mobile"
+        className="flex sm:hidden"
+        style={{
+          background: '#FFFFFF',
+          borderBottom: '1px solid rgba(1,1,1,0.06)',
+          padding: '12px 20px',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          position: 'sticky',
+          top: 0,
+          zIndex: 1000,
+        }}
+      >
+        <a href="/" style={{ fontWeight: 700, color: '#010101', fontSize: '15px', textDecoration: 'none' }}>
+          SubventionPro
+        </a>
+        <a href="#simulateur" style={{ padding: '8px 16px', background: '#010101', color: '#FFFFFF', borderRadius: '100px', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>
           Simuler →
         </a>
-      </div>
-    </nav>
+      </nav>
+    </>
   )
 }
 
@@ -142,16 +159,25 @@ function Navbar() {
 
 function MockupCard() {
   return (
-    <div className="vectra-card p-6 max-w-sm mx-auto">
+    <div
+      className="light-card p-6 mx-auto"
+      style={{ maxWidth: '480px', marginTop: '48px' }}
+    >
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-2 h-2 rounded-full bg-[#4CAF7D] animate-pulse" />
-        <span className="text-xs text-[#6B6860] font-medium">3 aides trouvées</span>
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#4CAF7D', animation: 'pulse 2s infinite' }} />
+        <span style={{ fontSize: '12px', color: '#6B6B6B', fontWeight: 500 }}>3 aides trouvées</span>
       </div>
-      <div className="text-3xl font-bold text-[#1A1A18] mb-1">
-        34 000 <span className="text-[#E8915A]">€</span>
+      <div style={{ fontSize: '32px', fontWeight: 800, color: '#010101', marginBottom: '4px' }}>
+        34 000{' '}
+        <span style={{
+          background: 'linear-gradient(135deg, #FF9270, #FFE989)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}>€</span>
       </div>
-      <div className="text-sm text-[#6B6860] mb-5">estimés pour votre profil</div>
-      <div className="space-y-3">
+      <div style={{ fontSize: '14px', color: '#6B6B6B', marginBottom: '20px' }}>estimés pour votre profil</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {[
           { nom: 'Chèque Numérique', montant: '5 000 €', tag: 'digital' },
           { nom: "Aide à l'alternance", montant: '6 000 €', tag: 'emploi' },
@@ -159,14 +185,28 @@ function MockupCard() {
         ].map((item, i) => (
           <div
             key={i}
-            className="flex items-center justify-between py-2.5 px-3 rounded-xl"
-            style={{ background: '#F5F0E8', border: '1px solid rgba(26,26,24,0.07)' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '10px 12px',
+              borderRadius: '12px',
+              background: '#F7F7F7',
+              border: '1px solid rgba(1,1,1,0.06)',
+            }}
           >
             <div>
-              <div className="text-sm font-medium text-[#1A1A18]">{item.nom}</div>
-              <span className="text-[10px] text-[#6B6860] uppercase tracking-wide">{item.tag}</span>
+              <div style={{ fontSize: '13px', fontWeight: 500, color: '#010101' }}>{item.nom}</div>
+              <div style={{ fontSize: '10px', color: '#6B6B6B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{item.tag}</div>
             </div>
-            <div className="text-sm font-bold text-[#E8915A]">{item.montant}</div>
+            <div style={{
+              fontSize: '13px',
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #FF9270, #FFE989)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>{item.montant}</div>
           </div>
         ))}
       </div>
@@ -177,29 +217,38 @@ function MockupCard() {
 function Hero() {
   return (
     <section
-      className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-28 pb-16 overflow-hidden"
-      style={{ background: '#F5F0E8' }}
+      style={{
+        background: '#F7F7F7',
+        paddingTop: '140px',
+        paddingBottom: '80px',
+        paddingLeft: '24px',
+        paddingRight: '24px',
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
     >
-      {/* Blob décoratif top-right */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-0 right-0 w-[600px] h-[600px]"
-        style={{
-          background: 'radial-gradient(circle at 70% 30%, rgba(232,145,90,0.10) 0%, transparent 65%)',
-        }}
-      />
-
-      <div className="relative z-10 max-w-3xl mx-auto text-center">
-        {/* Badge */}
+      <div style={{ maxWidth: '720px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        {/* Badge pill */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="inline-flex mb-8"
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          style={{ marginBottom: '24px' }}
         >
-          <span className="vectra-pill">
-            <span className="text-[#E8915A]"><IconZap /></span>
-            Simulation gratuite · Résultat immédiat
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: '#EFEFEF',
+            color: '#6B6B6B',
+            borderRadius: '100px',
+            padding: '6px 16px',
+            fontSize: '13px',
+            fontWeight: 500,
+          }}>
+            <span style={{ color: '#FF9270' }}>●</span>
+            Simulation gratuite · Sans engagement
           </span>
         </motion.div>
 
@@ -207,37 +256,55 @@ function Hero() {
         <motion.h1
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
-          className="font-extrabold text-[#1A1A18] leading-[1.05] mb-6"
-          style={{ fontSize: 'clamp(48px, 8vw, 72px)', letterSpacing: '-0.03em' }}
+          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.1 }}
+          style={{
+            fontSize: 'clamp(40px, 7vw, 72px)',
+            fontWeight: 800,
+            color: '#010101',
+            letterSpacing: '-0.03em',
+            lineHeight: 1.05,
+            marginBottom: '16px',
+          }}
         >
           L'État vous doit<br />
-          <span className="gradient-text">de l'argent.</span>
+          <span style={{
+            background: 'linear-gradient(135deg, #FF9270, #FFE989)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>
+            de l'argent.
+          </span>
         </motion.h1>
 
         {/* Subtitle */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.2 }}
-          className="text-[#6B6860] leading-relaxed max-w-2xl mx-auto mb-10"
-          style={{ fontSize: '18px', lineHeight: '1.7' }}
+          transition={{ duration: 0.3, ease: 'easeOut', delay: 0.2 }}
+          style={{
+            fontSize: '18px',
+            color: '#6B6B6B',
+            lineHeight: 1.6,
+            maxWidth: '560px',
+            margin: '0 auto 40px',
+          }}
         >
           Subventions régionales, aides nationales, fonds européens — votre entreprise est probablement éligible à des milliers d'euros que vous ne réclamez pas.{' '}
-          <span className="text-[#1A1A18] font-semibold">On s'occupe de tout.</span>
+          <span style={{ color: '#010101', fontWeight: 600 }}>On s'occupe de tout.</span>
         </motion.p>
 
         {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-5"
+          transition={{ duration: 0.3, ease: 'easeOut', delay: 0.3 }}
+          style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', marginBottom: '16px' }}
         >
-          <a href="#simulateur" className="btn-cta btn-cta-lg w-full sm:w-auto">
+          <a href="#simulateur" className="btn-primary btn-primary-lg">
             Calculer mes aides gratuitement →
           </a>
-          <a href="#comment-ca-marche" className="btn-ghost w-full sm:w-auto">
+          <a href="#comment-ca-marche" className="btn-ghost">
             Voir comment ça marche
           </a>
         </motion.div>
@@ -246,7 +313,7 @@ function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.45, ease: 'easeOut' }}
-          className="text-sm text-[#6B6860] mb-14"
+          style={{ fontSize: '13px', color: '#6B6B6B' }}
         >
           Résultat en 2 minutes · Zéro engagement · Zéro avance de frais
         </motion.p>
@@ -272,23 +339,28 @@ function StatCard({ target, suffix = '', label, delay }) {
   const count = useCountUp(target, 1800, inView)
 
   return (
-    <FadeUp delay={delay} lift className="vectra-card p-8 text-center hover-lift">
-      <div
-        ref={ref}
-        className="font-extrabold text-[#1A1A18] mb-2 tabular-nums"
-        style={{ fontSize: '56px', letterSpacing: '-0.02em', lineHeight: 1 }}
+    <FadeUp delay={delay}>
+      <motion.div
+        className="light-card hover-lift"
+        style={{ padding: '32px', textAlign: 'center' }}
+        whileHover={{ y: -4, transition: { duration: 0.2 } }}
       >
-        {count.toLocaleString('fr-FR')}{suffix}
-      </div>
-      <div className="text-sm text-[#6B6860] leading-snug">{label}</div>
+        <div
+          ref={ref}
+          style={{ fontSize: '56px', fontWeight: 800, color: '#010101', letterSpacing: '-0.02em', lineHeight: 1, marginBottom: '8px' }}
+        >
+          {count.toLocaleString('fr-FR')}{suffix}
+        </div>
+        <div style={{ fontSize: '14px', color: '#6B6B6B' }}>{label}</div>
+      </motion.div>
     </FadeUp>
   )
 }
 
 function Stats() {
   return (
-    <Section className="py-20 px-6" style={{ background: '#EDEAE3' }}>
-      <div className="max-w-5xl mx-auto grid sm:grid-cols-3 gap-5">
+    <Section style={{ background: '#EFEFEF', padding: '80px 24px' }}>
+      <div style={{ maxWidth: '960px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
         <StatCard target={40000} suffix="€" label="identifiés en moyenne par simulation" delay={0} />
         <StatCard target={11} label="dispositifs cumulables analysés" delay={0.1} />
         <StatCard target={100} suffix="%" label="gratuit jusqu'au résultat" delay={0.2} />
@@ -297,36 +369,54 @@ function Stats() {
   )
 }
 
-// ─── Section Simulateur (dark) ────────────────────────────────────────────────
+// ─── Simulateur (dark) ────────────────────────────────────────────────────────
 
 function SimulateurSection() {
   return (
-    <Section id="simulateur" className="py-24 px-6 overflow-hidden" style={{ background: '#111010' }}>
-      {/* Blob décoratif orange */}
+    <Section id="simulateur" style={{ background: '#010101', padding: '96px 24px', overflow: 'hidden' }}>
+      {/* Blob orange */}
       <div
         aria-hidden
-        className="pointer-events-none absolute top-[-100px] right-[-100px] w-[600px] h-[600px] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(232,145,90,0.15) 0%, transparent 70%)',
+          position: 'absolute',
+          top: '-100px',
+          right: '-100px',
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,146,112,0.20) 0%, transparent 70%)',
           filter: 'blur(80px)',
+          pointerEvents: 'none',
         }}
       />
 
-      <div className="relative z-10 max-w-3xl mx-auto">
-        <FadeUp className="text-center mb-10">
+      <div style={{ maxWidth: '640px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <FadeUp className="text-center" style={{ marginBottom: '40px' }}>
           <h2
-            className="font-bold text-white mb-3"
-            style={{ fontSize: 'clamp(36px, 5vw, 52px)', letterSpacing: '-0.02em' }}
+            style={{
+              fontSize: 'clamp(36px, 5vw, 52px)',
+              fontWeight: 700,
+              color: '#FFFFFF',
+              letterSpacing: '-0.02em',
+              marginBottom: '12px',
+            }}
           >
             Découvrez vos aides en 2 minutes
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '18px' }}>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '18px' }}>
             Simulation gratuite · Sans engagement · Résultat immédiat
           </p>
         </FadeUp>
 
         <FadeUp delay={0.1}>
-          <div className="dark-card" style={{ padding: '40px' }}>
+          <div style={{
+            background: 'rgba(255,255,255,0.06)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.10)',
+            borderRadius: '24px',
+            padding: '40px',
+          }}>
             <Simulateur inline />
           </div>
         </FadeUp>
@@ -360,57 +450,59 @@ const STEPS = [
 
 function CommentCaMarche() {
   return (
-    <Section id="comment-ca-marche" className="py-24 px-6" style={{ background: '#F5F0E8' }}>
-      <div className="max-w-2xl mx-auto">
-        <FadeUp className="text-center mb-16">
+    <Section id="comment-ca-marche" style={{ background: '#F7F7F7', padding: '96px 24px' }}>
+      <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+        <FadeUp className="text-center" style={{ marginBottom: '64px' }}>
           <h2
-            className="font-bold text-[#1A1A18] mb-4"
-            style={{ fontSize: 'clamp(32px, 4vw, 52px)', letterSpacing: '-0.02em' }}
+            style={{
+              fontSize: 'clamp(32px, 4vw, 52px)',
+              fontWeight: 700,
+              color: '#010101',
+              letterSpacing: '-0.02em',
+            }}
           >
             Trois étapes. Zéro prise de tête.
           </h2>
         </FadeUp>
 
-        <div className="space-y-10">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           {STEPS.map((step, i) => (
-            <FadeUp key={step.num} delay={i * 0.12}>
-              <div className="relative flex gap-6">
-                {/* Watermark number */}
+            <FadeUp key={step.num} delay={i * 0.1}>
+              <div style={{ position: 'relative' }}>
+                {/* Watermark */}
                 <div
                   aria-hidden
-                  className="absolute -left-2 -top-4 select-none pointer-events-none font-extrabold leading-none"
                   style={{
-                    fontSize: '96px',
-                    background: 'linear-gradient(135deg, #E8915A, #D4724A)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    opacity: 0.10,
+                    position: 'absolute',
+                    left: '-8px',
+                    top: '-20px',
+                    fontSize: '120px',
+                    fontWeight: 900,
+                    color: 'rgba(1,1,1,0.04)',
+                    lineHeight: 1,
+                    pointerEvents: 'none',
+                    userSelect: 'none',
                   }}
                 >
                   {step.num}
                 </div>
 
-                {/* Content card */}
-                <div className="vectra-card p-6 flex-1 relative">
-                  <div
-                    className="text-xs font-bold mb-3 tabular-nums"
-                    style={{ color: '#E8915A' }}
-                  >
+                <motion.div
+                  className="light-card"
+                  style={{ padding: '24px', position: 'relative' }}
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                >
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: '#FF9270', marginBottom: '10px', letterSpacing: '0.05em' }}>
                     {step.num}
                   </div>
-                  <h3 className="text-lg font-bold text-[#1A1A18] mb-2">{step.titre}</h3>
-                  <p className="text-[#6B6860] text-sm leading-relaxed mb-3">{step.desc}</p>
+                  <h3 style={{ fontSize: '17px', fontWeight: 600, color: '#010101', marginBottom: '8px' }}>{step.titre}</h3>
+                  <p style={{ fontSize: '14px', color: '#6B6B6B', lineHeight: 1.6, marginBottom: step.cta ? '12px' : 0 }}>{step.desc}</p>
                   {step.cta && (
-                    <a
-                      href={step.cta.href}
-                      className="text-sm font-semibold transition-colors"
-                      style={{ color: '#E8915A' }}
-                    >
+                    <a href={step.cta.href} style={{ fontSize: '14px', fontWeight: 600, color: '#FF9270', textDecoration: 'none' }}>
                       {step.cta.label}
                     </a>
                   )}
-                </div>
+                </motion.div>
               </div>
             </FadeUp>
           ))}
@@ -423,47 +515,40 @@ function CommentCaMarche() {
 // ─── Pourquoi nous ────────────────────────────────────────────────────────────
 
 const WHY_CARDS = [
-  {
-    icon: <IconDocument />,
-    titre: 'Plus de 200 dispositifs',
-    desc: 'Régionaux, nationaux, européens, sectoriels. Impossible à suivre seul. On cartographie tout pour vous.',
-  },
-  {
-    icon: <IconAlertTriangle />,
-    titre: 'Des dossiers conçus pour décourager',
-    desc: 'Formulaires abscons, pièces justificatives multiples, délais incompréhensibles. On a appris à les aimer.',
-  },
-  {
-    icon: <IconPhone />,
-    titre: 'Personne ne vous appelle',
-    desc: "L'État ne fait pas de marketing. Aucun organisme ne vous prévient que vous êtes éligible. C'est exactement notre rôle.",
-  },
+  { icon: IconDocument, titre: 'Plus de 200 dispositifs', desc: 'Régionaux, nationaux, européens, sectoriels. Impossible à suivre seul. On cartographie tout pour vous.' },
+  { icon: IconAlertTriangle, titre: 'Des dossiers conçus pour décourager', desc: 'Formulaires abscons, pièces justificatives multiples, délais incompréhensibles. On a appris à les aimer.' },
+  { icon: IconPhone, titre: 'Personne ne vous appelle', desc: "L'État ne fait pas de marketing. Aucun organisme ne vous prévient que vous êtes éligible. C'est exactement notre rôle." },
 ]
 
 function PourquoiNous() {
   return (
-    <Section className="py-24 px-6" style={{ background: '#EDEAE3' }}>
-      <div className="max-w-5xl mx-auto">
-        <FadeUp className="text-center mb-4">
-          <h2
-            className="font-bold text-[#1A1A18]"
-            style={{ fontSize: 'clamp(28px, 4vw, 52px)', letterSpacing: '-0.02em' }}
-          >
+    <Section style={{ background: '#EFEFEF', padding: '96px 24px' }}>
+      <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+        <FadeUp className="text-center" style={{ marginBottom: '16px' }}>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 700, color: '#010101', letterSpacing: '-0.02em' }}>
             Ce n'est pas votre faute si vous êtes passé à côté.
           </h2>
         </FadeUp>
-        <FadeUp delay={0.1} className="text-center mb-14">
-          <p className="text-[#6B6860] text-base max-w-xl mx-auto leading-relaxed" style={{ lineHeight: 1.7 }}>
+        <FadeUp delay={0.1} className="text-center" style={{ marginBottom: '56px' }}>
+          <p style={{ fontSize: '16px', color: '#6B6B6B', maxWidth: '560px', margin: '12px auto 0', lineHeight: 1.7 }}>
             Le système de subventions français est complexe par conception. On a construit l'outil qu'il aurait fallu depuis le début.
           </p>
         </FadeUp>
 
-        <div className="grid sm:grid-cols-3 gap-5">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
           {WHY_CARDS.map((card, i) => (
-            <FadeUp key={card.titre} delay={i * 0.1} lift className="vectra-card p-7 h-full hover-lift">
-              <div className="text-[#E8915A] mb-4">{card.icon}</div>
-              <h3 className="font-bold text-[#1A1A18] text-base mb-3">{card.titre}</h3>
-              <p className="text-[#6B6860] text-sm leading-relaxed" style={{ lineHeight: 1.7 }}>{card.desc}</p>
+            <FadeUp key={card.titre} delay={i * 0.1}>
+              <motion.div
+                className="light-card hover-lift"
+                style={{ padding: '28px', height: '100%' }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              >
+                <div style={{ color: '#010101', marginBottom: '16px' }}>
+                  <card.icon color="#010101" />
+                </div>
+                <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#010101', marginBottom: '10px' }}>{card.titre}</h3>
+                <p style={{ fontSize: '14px', color: '#6B6B6B', lineHeight: 1.7 }}>{card.desc}</p>
+              </motion.div>
             </FadeUp>
           ))}
         </div>
@@ -475,65 +560,73 @@ function PourquoiNous() {
 // ─── Témoignages ──────────────────────────────────────────────────────────────
 
 const TEMOIGNAGES = [
-  {
-    quote: "En 20 ans de restaurant je n'avais jamais touché une seule subvention. En trois semaines on a obtenu 23 000€ pour nos nouveaux équipements.",
-    nom: 'Thomas D.',
-    titre: 'Restaurateur · Lyon',
-    montant: '+23 000€',
-  },
-  {
-    quote: "Le dossier PMR traînait depuis deux ans. Ils l'ont monté en une semaine, on a eu 14 000€.",
-    nom: 'Camille R.',
-    titre: 'Gérante · Bordeaux',
-    montant: '+14 000€',
-  },
-  {
-    quote: "Je pensais que c'était réservé aux grandes boîtes. On a touché 18 500€ sans débourser un centime d'avance.",
-    nom: 'Marc L.',
-    titre: 'Artisan plombier · Nantes',
-    montant: '+18 500€',
-  },
+  { quote: "En 20 ans de restaurant je n'avais jamais touché une seule subvention. En trois semaines on a obtenu 23 000€ pour nos nouveaux équipements.", nom: 'Thomas D.', titre: 'Restaurateur · Lyon', montant: '+23 000€' },
+  { quote: "Le dossier PMR traînait depuis deux ans. Ils l'ont monté en une semaine, on a eu 14 000€.", nom: 'Camille R.', titre: 'Gérante · Bordeaux', montant: '+14 000€' },
+  { quote: "Je pensais que c'était réservé aux grandes boîtes. On a touché 18 500€ sans débourser un centime d'avance.", nom: 'Marc L.', titre: 'Artisan plombier · Nantes', montant: '+18 500€' },
 ]
 
 function Temoignages() {
   return (
-    <Section className="py-24 px-6" style={{ background: '#F5F0E8' }}>
-      <div className="max-w-5xl mx-auto">
-        <FadeUp className="text-center mb-14">
-          <h2
-            className="font-bold text-[#1A1A18]"
-            style={{ fontSize: 'clamp(28px, 4vw, 52px)', letterSpacing: '-0.02em' }}
-          >
+    <Section style={{ background: '#F7F7F7', padding: '96px 24px' }}>
+      <div style={{ maxWidth: '960px', margin: '0 auto' }}>
+        <FadeUp className="text-center" style={{ marginBottom: '56px' }}>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 700, color: '#010101', letterSpacing: '-0.02em' }}>
             Ils ne savaient pas non plus.
           </h2>
         </FadeUp>
 
-        <div className="grid sm:grid-cols-3 gap-5">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
           {TEMOIGNAGES.map((t, i) => (
-            <FadeUp key={t.nom} delay={i * 0.1} lift className="vectra-card p-7 flex flex-col gap-5 hover-lift h-full">
-              {/* Quote marks décoratifs */}
-              <div
-                className="text-5xl font-serif leading-none select-none"
-                style={{ color: '#E8915A', opacity: 0.25, lineHeight: 0.8 }}
+            <FadeUp key={t.nom} delay={i * 0.1}>
+              <motion.div
+                className="light-card hover-lift"
+                style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative', overflow: 'hidden', height: '100%' }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
               >
-                "
-              </div>
+                {/* Quote mark décoratif */}
+                <div
+                  aria-hidden
+                  style={{
+                    position: 'absolute',
+                    top: '8px',
+                    left: '16px',
+                    fontSize: '80px',
+                    fontWeight: 900,
+                    color: '#EFEFEF',
+                    lineHeight: 1,
+                    pointerEvents: 'none',
+                    userSelect: 'none',
+                  }}
+                >
+                  "
+                </div>
 
-              {/* Badge montant */}
-              <div
-                className="inline-flex self-start items-center gap-1.5 text-sm font-bold px-3 py-1.5 rounded-full text-white"
-                style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)' }}
-              >
-                {t.montant}
-              </div>
+                {/* Badge montant */}
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignSelf: 'flex-start',
+                    padding: '4px 12px',
+                    borderRadius: '100px',
+                    background: 'linear-gradient(135deg, #FF9270, #FFE989)',
+                    color: '#010101',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    position: 'relative',
+                    zIndex: 1,
+                  }}
+                >
+                  {t.montant}
+                </div>
 
-              <p className="text-[#1A1A18] text-sm leading-relaxed flex-1 italic" style={{ lineHeight: 1.7 }}>
-                "{t.quote}"
-              </p>
-              <div>
-                <div className="font-semibold text-[#1A1A18] text-sm">{t.nom}</div>
-                <div className="text-[#6B6860] text-xs mt-0.5">{t.titre}</div>
-              </div>
+                <p style={{ fontSize: '14px', color: '#010101', lineHeight: 1.7, fontStyle: 'italic', flex: 1, position: 'relative', zIndex: 1 }}>
+                  "{t.quote}"
+                </p>
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#010101' }}>{t.nom}</div>
+                  <div style={{ fontSize: '12px', color: '#6B6B6B', marginTop: '2px' }}>{t.titre}</div>
+                </div>
+              </motion.div>
             </FadeUp>
           ))}
         </div>
@@ -545,49 +638,38 @@ function Temoignages() {
 // ─── FAQ ──────────────────────────────────────────────────────────────────────
 
 const FAQ_ITEMS = [
-  {
-    q: "C'est vraiment gratuit ?",
-    r: "Totalement. Aucun frais en amont, aucun abonnement. On prend un pourcentage uniquement sur les subventions effectivement obtenues. Zéro résultat, zéro facture.",
-  },
-  {
-    q: "Combien peut-on espérer ?",
-    r: "Ça dépend de votre profil et de vos projets. Nos simulations identifient en moyenne entre 15 000€ et 45 000€ de subventions potentielles cumulées. Faites la simulation pour voir.",
-  },
-  {
-    q: "Mon secteur est éligible ?",
-    r: "Restauration, commerce, artisanat, services, hôtellerie — la grande majorité des TPE/PME françaises sont éligibles à au moins trois dispositifs. Vérifiez en 2 minutes.",
-  },
-  {
-    q: "Combien de temps pour recevoir les fonds ?",
-    r: "Le montage de dossier prend 1 à 2 semaines. Le versement entre 1 et 6 mois selon les organismes. Certaines aides sont versées en moins de 30 jours.",
-  },
-  {
-    q: "C'est légal ?",
-    r: "Ces aides sont publiques, créées précisément pour les entreprises comme la vôtre. Notre métier existe depuis des années. On formalise et automatise ce que des consultants font à la main depuis toujours.",
-  },
+  { q: "C'est vraiment gratuit ?", r: "Totalement. Aucun frais en amont, aucun abonnement. On prend un pourcentage uniquement sur les subventions effectivement obtenues. Zéro résultat, zéro facture." },
+  { q: "Combien peut-on espérer ?", r: "Ça dépend de votre profil et de vos projets. Nos simulations identifient en moyenne entre 15 000€ et 45 000€ de subventions potentielles cumulées. Faites la simulation pour voir." },
+  { q: "Mon secteur est éligible ?", r: "Restauration, commerce, artisanat, services, hôtellerie — la grande majorité des TPE/PME françaises sont éligibles à au moins trois dispositifs. Vérifiez en 2 minutes." },
+  { q: "Combien de temps pour recevoir les fonds ?", r: "Le montage de dossier prend 1 à 2 semaines. Le versement entre 1 et 6 mois selon les organismes. Certaines aides sont versées en moins de 30 jours." },
+  { q: "C'est légal ?", r: "Ces aides sont publiques, créées précisément pour les entreprises comme la vôtre. Notre métier existe depuis des années. On formalise et automatise ce que des consultants font à la main depuis toujours." },
 ]
 
-function FaqItem({ item, index }) {
+function FaqItem({ item, index, isLast }) {
   const [open, setOpen] = useState(false)
 
   return (
     <FadeUp delay={index * 0.05}>
-      <div
-        className="overflow-hidden"
-        style={{
-          borderBottom: '1px solid rgba(26,26,24,0.10)',
-        }}
-      >
+      <div style={{ borderBottom: isLast ? 'none' : '1px solid rgba(1,1,1,0.08)' }}>
         <button
           onClick={() => setOpen(!open)}
-          className="w-full flex items-center justify-between px-2 py-5 text-left"
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '20px 0',
+            textAlign: 'left',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+          }}
         >
-          <span className="font-semibold text-[#1A1A18] text-sm pr-4">{item.q}</span>
+          <span style={{ fontSize: '15px', fontWeight: 500, color: '#010101', paddingRight: '16px' }}>{item.q}</span>
           <motion.span
             animate={{ rotate: open ? 45 : 0 }}
             transition={{ duration: 0.25 }}
-            className="shrink-0 text-xl leading-none font-light"
-            style={{ color: '#E8915A' }}
+            style={{ flexShrink: 0, fontSize: '20px', color: '#010101', lineHeight: 1 }}
           >
             +
           </motion.span>
@@ -602,9 +684,9 @@ function FaqItem({ item, index }) {
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
-              <div className="px-2 pb-5 text-sm text-[#6B6860] leading-relaxed" style={{ lineHeight: 1.7 }}>
+              <p style={{ fontSize: '14px', color: '#6B6B6B', lineHeight: 1.7, paddingBottom: '20px' }}>
                 {item.r}
-              </div>
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -615,23 +697,17 @@ function FaqItem({ item, index }) {
 
 function Faq() {
   return (
-    <Section id="faq" className="py-24 px-6" style={{ background: '#EDEAE3' }}>
-      <div className="max-w-2xl mx-auto">
-        <FadeUp className="text-center mb-12">
-          <h2
-            className="font-bold text-[#1A1A18]"
-            style={{ fontSize: 'clamp(28px, 4vw, 52px)', letterSpacing: '-0.02em' }}
-          >
+    <Section id="faq" style={{ background: '#EFEFEF', padding: '96px 24px' }}>
+      <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+        <FadeUp className="text-center" style={{ marginBottom: '48px' }}>
+          <h2 style={{ fontSize: 'clamp(28px, 4vw, 52px)', fontWeight: 700, color: '#010101', letterSpacing: '-0.02em' }}>
             Les questions qu'on nous pose tout le temps.
           </h2>
         </FadeUp>
 
-        <div
-          className="vectra-card px-6 py-2"
-          style={{ borderRadius: '20px' }}
-        >
+        <div>
           {FAQ_ITEMS.map((item, i) => (
-            <FaqItem key={item.q} item={item} index={i} />
+            <FaqItem key={item.q} item={item} index={i} isLast={i === FAQ_ITEMS.length - 1} />
           ))}
         </div>
       </div>
@@ -643,38 +719,60 @@ function Faq() {
 
 function CtaFinal() {
   return (
-    <Section className="py-24 px-6 overflow-hidden" style={{ background: '#111010' }}>
-      {/* Blob bleu décoratif */}
+    <Section style={{ background: '#010101', padding: '96px 24px', overflow: 'hidden' }}>
+      {/* Blob bleu */}
       <div
         aria-hidden
-        className="pointer-events-none absolute bottom-[-100px] left-[-100px] w-[600px] h-[600px] rounded-full"
         style={{
-          background: 'radial-gradient(circle, rgba(181,196,232,0.15) 0%, transparent 70%)',
+          position: 'absolute',
+          bottom: '-100px',
+          left: '-100px',
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(172,206,234,0.20) 0%, transparent 70%)',
           filter: 'blur(80px)',
+          pointerEvents: 'none',
         }}
       />
 
-      <FadeUp className="relative z-10">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="dark-card px-8 py-16">
-            <h2
-              className="font-extrabold text-white leading-tight mb-5"
-              style={{ fontSize: 'clamp(32px, 5vw, 56px)', letterSpacing: '-0.02em' }}
-            >
+      <FadeUp style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: '720px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{
+            background: 'rgba(255,255,255,0.04)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: '24px',
+            padding: '64px 48px',
+          }}>
+            <h2 style={{
+              fontSize: 'clamp(32px, 5vw, 56px)',
+              fontWeight: 800,
+              color: '#FFFFFF',
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1,
+              marginBottom: '20px',
+            }}>
               Votre prochain investissement<br />
               est peut-être{' '}
-              <span className="gradient-text">déjà financé.</span>
+              <span style={{
+                background: 'linear-gradient(135deg, #FF9270, #FFE989)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>déjà financé.</span>
             </h2>
 
-            <p className="text-base sm:text-lg leading-relaxed mb-10 max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, maxWidth: '480px', margin: '0 auto 40px' }}>
               Découvrez en 2 minutes ce que l'État, votre région et l'Europe peuvent couvrir pour vous.
             </p>
 
-            <a href="#simulateur" className="btn-cta btn-cta-lg inline-flex">
+            <a href="#simulateur" className="btn-cta-gradient" style={{ padding: '16px 32px' }}>
               Lancer ma simulation →
             </a>
 
-            <p className="text-sm mt-6" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', marginTop: '20px' }}>
               Rejoignez les dirigeants qui ne laissent plus d'argent sur la table.
             </p>
           </div>
@@ -688,20 +786,10 @@ function CtaFinal() {
 
 function Footer() {
   return (
-    <footer className="py-8 px-6" style={{ background: '#1A1A18' }}>
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div
-            className="w-6 h-6 rounded-lg flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #E8915A, #D4724A)' }}
-          >
-            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.4)' }}>SubventionPro</span>
-        </div>
-        <p className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
+    <footer style={{ background: '#010101', padding: '32px 24px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+      <div style={{ maxWidth: '1152px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+        <span style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(255,255,255,0.35)' }}>SubventionPro</span>
+        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>
           © 2026 SubventionPro · Simulation gratuite · Données confidentielles
         </p>
       </div>
@@ -713,7 +801,7 @@ function Footer() {
 
 export default function Landing() {
   return (
-    <div className="min-h-screen">
+    <div style={{ minHeight: '100vh' }}>
       <Navbar />
       <Hero />
       <Stats />

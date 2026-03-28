@@ -25,7 +25,7 @@ export default function ProgressBar({ current, total, dark = false }) {
       >
         <motion.div
           className="h-full rounded-full"
-          style={{ background: 'linear-gradient(90deg, #E8915A, #D4724A)' }}
+          style={{ background: 'linear-gradient(90deg, #FF9270, #FFE989)' }}
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
