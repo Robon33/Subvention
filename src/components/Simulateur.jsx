@@ -30,6 +30,35 @@ function Resultats({ reponses, onRestart, dark = false, aidesExternes = [] }) {
   const montantPotentiel = useMemo(() => calculerMontantTotal(aidesPotentielles), [aidesPotentielles])
   const countedConfirme = useCountUp(montantConfirme, 1500, true)
 
+  const montantTotal = useMemo(() => calculerMontantTotal(dispositifsEligibles), [dispositifsEligibles])
+
+  // Envoyer le lead à Supabase (une seule fois au montage)
+  useEffect(() => {
+    const payload = {
+      email: reponses.email || null,
+      siren: reponses.siren || null,
+      nomEntreprise: reponses.nomEntreprise || null,
+      secteur: reponses.secteur || null,
+      taille: reponses.taille || null,
+      region: reponses.region || null,
+      projets: reponses.projets || [],
+      nbAides: dispositifsEligibles.length,
+      montantTotal,
+      aides: dispositifsEligibles.map(d => ({
+        id: d.id,
+        nom: d.nom,
+        montantMax: d.montantMax,
+        organisme: d.organismes?.[0],
+      })),
+    }
+
+    fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).catch(() => {}) // silencieux si erreur
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   const CALENDLY_URL = 'https://calendly.com/votre-lien'
 
   const totalAides = dispositifsEligibles.length
