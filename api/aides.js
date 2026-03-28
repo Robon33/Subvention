@@ -2,11 +2,19 @@
 
 function stripHTML(html) {
   return html
+    .replace(/&euro;/gi, '€')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&#8239;/g, ' ')
+    .replace(/&#160;/g, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&eacute;/gi, 'é')
+    .replace(/&agrave;/gi, 'à')
+    .replace(/&egrave;/gi, 'è')
+    .replace(/&ugrave;/gi, 'ù')
+    .replace(/&ccedil;/gi, 'ç')
     .replace(/<[^>]*>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&eacute;/g, 'é')
-    .replace(/&agrave;/g, 'à')
-    .replace(/&egrave;/g, 'è')
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -37,6 +45,12 @@ function parseMontantHTML(html) {
   const maxMatch = texte.match(/(?:maximum|maxi|plafond)[^\d]*([\d][\d\s]*)\s*[€e]/)
   if (maxMatch) {
     return { min: 0, max: parseNum(maxMatch[1]) }
+  }
+
+  // Pattern "X € par jour/an/mois" (taux journalier → multiplier par 10)
+  const tauxMatch = texte.match(/([\d][\d\s]*)\s*€\s*par\s*(?:jour|an|mois)/)
+  if (tauxMatch) {
+    return { min: 0, max: parseNum(tauxMatch[1]) * 10 }
   }
 
   // Premier nombre suivi de €
