@@ -1,3 +1,6 @@
+const cache = new Map()
+const CACHE_TTL = 60 * 60 * 1000 // 1 heure
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Content-Type', 'application/json')
@@ -7,6 +10,11 @@ export default async function handler(req, res) {
 
   if (!sirenClean || sirenClean.length !== 9) {
     return res.status(400).json({ error: 'SIREN invalide' })
+  }
+
+  const cached = cache.get(sirenClean)
+  if (cached && Date.now() - cached.ts < CACHE_TTL) {
+    return res.status(200).json(cached.data)
   }
 
   try {
@@ -82,7 +90,7 @@ export default async function handler(req, res) {
       '28': '76', '27': '21', '24': '45', '94': '2A',
     }
 
-    return res.status(200).json({
+    const result = {
       nom: entreprise.nom_complet,
       siren: sirenClean,
       naf,
@@ -92,7 +100,10 @@ export default async function handler(req, res) {
       anneeCreation,
       region: regionMap[regionCode] || '',
       departement: entreprise.siege?.departement || deptMap[regionCode] || '',
-    })
+    }
+
+    cache.set(sirenClean, { data: result, ts: Date.now() })
+    return res.status(200).json(result)
 
   } catch (err) {
     return res.status(500).json({ error: err.message })
