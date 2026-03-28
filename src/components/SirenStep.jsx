@@ -36,14 +36,23 @@ export default function SirenStep({ onConfirm, onSkip, dark = false }) {
     if (siren.length !== 9) return
     setPhase('loading')
     try {
-      const res = await fetch(`/api/sirene?siren=${siren}`)
+      const res = await fetch(`/api/aides?siren=${siren}&projets=materiel`)
       const text = await res.text()
-      console.log('Sirene raw response:', res.status, text)
+      console.log('Aides/siren raw response:', res.status, text)
       if (!res.ok) throw new Error(`HTTP ${res.status}: ${text}`)
       const data = JSON.parse(text)
       if (data.error) throw new Error(data.error)
-      // data = { nom, siren, naf, secteur, taille, anciennete, anneeCreation, region, departement }
-      setEntreprise(data)
+
+      // Entreprise extraite depuis les-aides.fr etablissement
+      const ent = data.entreprise
+      if (!ent || !ent.nom) {
+        // Fallback : pas d'établissement renvoyé, construire un profil minimal
+        throw new Error('Entreprise non trouvée')
+      }
+
+      // Stocker idr pour réutilisation future
+      ent._idr = data.idr
+      setEntreprise(ent)
       setPhase('found')
     } catch (err) {
       console.error('Sirene error:', err)

@@ -1,3 +1,15 @@
+// ─── Filière par secteur (codes les-aides.fr) ────────────────────────────────
+
+const FILIERE_MAP = {
+  restauration: 337,  // Métiers de bouche
+  commerce:     391,  // Service aux entreprises
+  artisanat:    336,  // Artisanat
+  hotellerie:   338,  // Tourisme
+  sante:        297,  // Santé
+  batiment:     295,  // BTP matériaux de construction
+  services:     391,  // Service aux entreprises
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function stripHTML(html) {
@@ -62,6 +74,92 @@ function parseMontantHTML(html) {
   return { min: 0, max: 10000 }
 }
 
+// ─── Mapping entreprise (remplace api/sirene.js) ─────────────────────────────
+
+function mapEtablissement(etab) {
+  if (!etab) return null
+
+  const naf = etab.ape || ''
+  const code2 = naf.replace('.', '').substring(0, 2)
+  const secteurMap = {
+    '56': 'restauration', '47': 'commerce',
+    '43': 'artisanat',    '42': 'artisanat',
+    '41': 'batiment',
+    '55': 'hotellerie',
+    '86': 'sante',        '87': 'sante',
+  }
+  const secteur = secteurMap[code2] || 'services'
+
+  const effectif = etab.tranche_effectif || ''
+  const tailleMap = {
+    '00': 'micro', '01': 'micro',
+    '02': 'tpe',   '03': 'tpe',
+    '11': 'pme',   '12': 'pme', '21': 'pme',
+  }
+  const taille = tailleMap[effectif] || 'micro'
+
+  let anciennete = 'plus_3_ans'
+  let anneeCreation = null
+  const dateCreation = etab.date_creation
+  if (dateCreation) {
+    anneeCreation = String(dateCreation).substring(0, 4)
+    const annees = (Date.now() - new Date(dateCreation)) / (1000 * 60 * 60 * 24 * 365)
+    if (annees < 1) anciennete = 'moins_1_an'
+    else if (annees < 3) anciennete = '1_3_ans'
+  }
+
+  // Département depuis le code commune (2 premiers chiffres, sauf Corse)
+  const commune = etab.commune || ''
+  let departement = ''
+  if (commune.startsWith('2A') || commune.startsWith('2B')) {
+    departement = commune.substring(0, 2)
+  } else if (commune.length >= 2) {
+    departement = commune.substring(0, 2)
+  }
+
+  // Département → région
+  const deptRegionMap = {
+    '01':'auvergne_rhone_alpes','03':'auvergne_rhone_alpes','07':'auvergne_rhone_alpes','15':'auvergne_rhone_alpes',
+    '26':'auvergne_rhone_alpes','38':'auvergne_rhone_alpes','42':'auvergne_rhone_alpes','43':'auvergne_rhone_alpes',
+    '63':'auvergne_rhone_alpes','69':'auvergne_rhone_alpes','73':'auvergne_rhone_alpes','74':'auvergne_rhone_alpes',
+    '21':'bourgogne_franche_comte','25':'bourgogne_franche_comte','39':'bourgogne_franche_comte',
+    '58':'bourgogne_franche_comte','70':'bourgogne_franche_comte','71':'bourgogne_franche_comte',
+    '89':'bourgogne_franche_comte','90':'bourgogne_franche_comte',
+    '22':'bretagne','29':'bretagne','35':'bretagne','56':'bretagne',
+    '18':'centre_val_de_loire','28':'centre_val_de_loire','36':'centre_val_de_loire',
+    '37':'centre_val_de_loire','41':'centre_val_de_loire','45':'centre_val_de_loire',
+    '2A':'corse','2B':'corse',
+    '08':'grand_est','10':'grand_est','51':'grand_est','52':'grand_est','54':'grand_est',
+    '55':'grand_est','57':'grand_est','67':'grand_est','68':'grand_est','88':'grand_est',
+    '02':'hauts_de_france','59':'hauts_de_france','60':'hauts_de_france','62':'hauts_de_france','80':'hauts_de_france',
+    '75':'ile_de_france','77':'ile_de_france','78':'ile_de_france','91':'ile_de_france',
+    '92':'ile_de_france','93':'ile_de_france','94':'ile_de_france','95':'ile_de_france',
+    '14':'normandie','27':'normandie','50':'normandie','61':'normandie','76':'normandie',
+    '16':'nouvelle_aquitaine','17':'nouvelle_aquitaine','19':'nouvelle_aquitaine','23':'nouvelle_aquitaine',
+    '24':'nouvelle_aquitaine','33':'nouvelle_aquitaine','40':'nouvelle_aquitaine','47':'nouvelle_aquitaine',
+    '64':'nouvelle_aquitaine','79':'nouvelle_aquitaine','86':'nouvelle_aquitaine','87':'nouvelle_aquitaine',
+    '09':'occitanie','11':'occitanie','12':'occitanie','30':'occitanie','31':'occitanie',
+    '32':'occitanie','34':'occitanie','46':'occitanie','48':'occitanie','65':'occitanie',
+    '66':'occitanie','81':'occitanie','82':'occitanie',
+    '44':'pays_de_la_loire','49':'pays_de_la_loire','53':'pays_de_la_loire',
+    '72':'pays_de_la_loire','85':'pays_de_la_loire',
+    '04':'paca','05':'paca','06':'paca','13':'paca','83':'paca','84':'paca',
+  }
+  const region = deptRegionMap[departement] || ''
+
+  return {
+    nom: etab.raison_sociale || etab.nom || '',
+    siren: etab.siren || '',
+    naf,
+    secteur,
+    taille,
+    anciennete,
+    anneeCreation,
+    region,
+    departement,
+  }
+}
+
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 export default async function handler(req, res) {
@@ -69,7 +167,7 @@ export default async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json')
 
   const IDC = process.env.LES_AIDES_API_KEY
-  const { siren, ape, departement, projets } = req.query
+  const { siren, ape, departement, projets, requete, secteur } = req.query
 
   const projetsMap = {
     materiel:            [802],
@@ -98,7 +196,10 @@ export default async function handler(req, res) {
 
   const params = new URLSearchParams({ idc: IDC })
 
-  if (siren && siren.length === 9) {
+  // Si on a un idr existant (requete), on le réutilise
+  if (requete) {
+    params.set('requete', requete)
+  } else if (siren && siren.length === 9) {
     params.set('siren', siren)
   } else {
     params.set('ape', ape || 'A') // fallback APE générique
@@ -107,6 +208,10 @@ export default async function handler(req, res) {
 
   domaines.forEach(d => params.append('domaine[]', d))
   params.set('moyen', 833)
+
+  // Filière sectorielle
+  const filiere = secteur ? FILIERE_MAP[secteur] : null
+  if (filiere) params.set('filiere', filiere)
 
   try {
     const response = await fetch(
@@ -122,12 +227,15 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}))
-      return res.status(200).json({ aides: [], error: err.exception || `HTTP ${response.status}` })
+      return res.status(200).json({ aides: [], entreprise: null, error: err.exception || `HTTP ${response.status}` })
     }
 
     const data = await response.json()
     const dispositifs = data.dispositifs || []
     const idr = data.idr
+
+    // Extraire l'établissement (renvoyé par les-aides.fr quand siren est fourni)
+    const entreprise = mapEtablissement(data.etablissement)
 
     // Charger fiches détaillées des 5 premières aides en parallèle (quota : 5 max)
     const fichesPromises = dispositifs.slice(0, 5).map(d =>
@@ -156,14 +264,22 @@ export default async function handler(req, res) {
 
       const adresse = fiche?.organisme?.adresses?.[0]
 
+      // Aide confirmée si territoriale ou organisme connu
+      const sigle = d.sigle || ''
+      const confirmed = (
+        d.implantation === 'T' ||
+        ['France Travail', 'URSSAF', 'Bpifrance'].includes(sigle)
+      )
+
       return {
         id: String(d.numero),
         nom: d.nom,
         description: descriptionPropre,
         montantMin: min,
         montantMax: max || 10000,
-        organismes: [d.sigle || 'Organisme public'],
+        organismes: [sigle || 'Organisme public'],
         implantation: d.implantation,
+        confirmed,
         tags: { projets: projetsList, tailles: [] },
         source: d.uri || 'https://les-aides.fr',
         contact: adresse ? {
@@ -177,10 +293,10 @@ export default async function handler(req, res) {
       }
     })
 
-    return res.status(200).json({ aides, idr })
+    return res.status(200).json({ aides, entreprise, idr })
 
   } catch (err) {
     console.error('Erreur les-aides.fr:', err)
-    return res.status(200).json({ aides: [], error: err.message })
+    return res.status(200).json({ aides: [], entreprise: null, error: err.message })
   }
 }

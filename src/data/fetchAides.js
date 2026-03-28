@@ -1,11 +1,15 @@
 export async function fetchAidesTerritoriales(params = {}) {
   try {
-    const { siren, ape, departement, projets = [] } = params
+    const { siren, ape, departement, projets = [], requete, secteur } = params
     const query = new URLSearchParams()
 
-    if (siren)             query.set('siren', siren)
+    // Si on a un idr existant, on le réutilise (évite de renvoyer le siren)
+    if (requete)           query.set('requete', requete)
+    else if (siren)        query.set('siren', siren)
+
     if (ape)               query.set('ape', ape)
     if (departement)       query.set('departement', departement)
+    if (secteur)           query.set('secteur', secteur)
     if (projets.length)    query.set('projets', projets.join(','))
 
     const res = await fetch(`/api/aides?${query}`)

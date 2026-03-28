@@ -15,10 +15,24 @@ function Resultats({ reponses, onRestart, dark = false, aidesExternes = [] }) {
     () => calculerEligibilite(reponses, aidesExternes),
     [reponses, aidesExternes]
   )
-  const montantTotal = useMemo(() => calculerMontantTotal(dispositifsEligibles), [dispositifsEligibles])
-  const countedTotal = useCountUp(montantTotal, 1500, true)
+
+  // Séparer confirmées / potentielles
+  const aidesConfirmees = useMemo(
+    () => dispositifsEligibles.filter(d => d.confirmed || d._manual),
+    [dispositifsEligibles]
+  )
+  const aidesPotentielles = useMemo(
+    () => dispositifsEligibles.filter(d => !d.confirmed && !d._manual),
+    [dispositifsEligibles]
+  )
+
+  const montantConfirme = useMemo(() => calculerMontantTotal(aidesConfirmees), [aidesConfirmees])
+  const montantPotentiel = useMemo(() => calculerMontantTotal(aidesPotentielles), [aidesPotentielles])
+  const countedConfirme = useCountUp(montantConfirme, 1500, true)
 
   const CALENDLY_URL = 'https://calendly.com/votre-lien'
+
+  const totalAides = dispositifsEligibles.length
 
   return (
     <motion.div
@@ -46,23 +60,23 @@ function Resultats({ reponses, onRestart, dark = false, aidesExternes = [] }) {
           }}
         >
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4CAF7D', display: 'inline-block' }} />
-          {dispositifsEligibles.length} aide{dispositifsEligibles.length > 1 ? 's' : ''} trouvée{dispositifsEligibles.length > 1 ? 's' : ''}
+          {aidesConfirmees.length} aide{aidesConfirmees.length > 1 ? 's' : ''} confirmée{aidesConfirmees.length > 1 ? 's' : ''}
         </div>
 
         <h1 style={{ fontSize: 'clamp(24px, 4vw, 32px)', fontWeight: 700, lineHeight: 1.2, marginBottom: '12px', color: dark ? '#FFFFFF' : '#010101' }}>
           Vous êtes éligible à{' '}
           <span style={{ color: '#FF9270' }}>
-            {dispositifsEligibles.length} aide{dispositifsEligibles.length > 1 ? 's' : ''}
+            {aidesConfirmees.length} aide{aidesConfirmees.length > 1 ? 's' : ''}
           </span>
         </h1>
 
         <p style={{ fontSize: '16px', marginBottom: '24px', color: dark ? 'rgba(255,255,255,0.55)' : '#6B6B6B' }}>
-          pour un montant total estimé de
+          pour un montant estimé de
         </p>
 
         <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: '4px' }}>
           <span style={{ fontSize: 'clamp(40px, 6vw, 56px)', fontWeight: 800, color: dark ? '#FFFFFF' : '#010101', fontVariantNumeric: 'tabular-nums' }}>
-            {countedTotal.toLocaleString('fr-FR')}
+            {countedConfirme.toLocaleString('fr-FR')}
           </span>
           <span style={{ fontSize: '24px', fontWeight: 700, color: dark ? '#FFFFFF' : '#010101' }}>€</span>
         </div>
@@ -72,21 +86,37 @@ function Resultats({ reponses, onRestart, dark = false, aidesExternes = [] }) {
         </p>
       </div>
 
-      {/* Liste des dispositifs */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-        {dispositifsEligibles.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '48px 0' }}>
-            <p style={{ fontSize: '18px', fontWeight: 500, marginBottom: '8px', color: dark ? '#FFFFFF' : '#6B6B6B' }}>Aucune aide détectée</p>
-            <p style={{ fontSize: '14px', color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}>Nos experts peuvent analyser votre situation plus en détail.</p>
+      {/* ── Section 1 : Aides confirmées ── */}
+      {aidesConfirmees.length > 0 && (
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              padding: '4px 12px', borderRadius: '100px', fontSize: '13px', fontWeight: 600,
+              ...(dark
+                ? { background: 'rgba(76,175,125,0.15)', color: '#4CAF7D' }
+                : { background: '#F0FDF4', color: '#16A34A' }),
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4CAF7D', display: 'inline-block' }} />
+              Confirmées
+            </span>
           </div>
-        ) : (
-          dispositifsEligibles.map((d, i) => (
-            <ResultatCard key={d.id} dispositif={d} index={i} dark={dark} />
-          ))
-        )}
-      </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {aidesConfirmees.map((d, i) => (
+              <ResultatCard key={d.id} dispositif={d} index={i} dark={dark} />
+            ))}
+          </div>
+        </div>
+      )}
 
-      {/* Disclaimer + CTA */}
+      {totalAides === 0 && (
+        <div style={{ textAlign: 'center', padding: '48px 0', marginBottom: '32px' }}>
+          <p style={{ fontSize: '18px', fontWeight: 500, marginBottom: '8px', color: dark ? '#FFFFFF' : '#6B6B6B' }}>Aucune aide détectée</p>
+          <p style={{ fontSize: '14px', color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}>Nos experts peuvent analyser votre situation plus en détail.</p>
+        </div>
+      )}
+
+      {/* ── CTA entre les deux sections ── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -95,6 +125,7 @@ function Resultats({ reponses, onRestart, dark = false, aidesExternes = [] }) {
           borderRadius: '16px',
           padding: '24px 32px',
           textAlign: 'center',
+          marginBottom: '32px',
           ...(dark
             ? { background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }
             : { background: '#010101' }),
@@ -131,6 +162,45 @@ function Resultats({ reponses, onRestart, dark = false, aidesExternes = [] }) {
         <p style={{ fontSize: '12px', marginTop: '12px', color: 'rgba(255,255,255,0.4)' }}>Sans engagement · 30 minutes · 100% gratuit</p>
       </motion.div>
 
+      {/* ── Section 2 : Aides potentielles ── */}
+      {aidesPotentielles.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.4, ease: 'easeOut' }}
+          style={{ marginBottom: '32px' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              padding: '4px 12px', borderRadius: '100px', fontSize: '13px', fontWeight: 600,
+              ...(dark
+                ? { background: 'rgba(255,146,112,0.15)', color: '#FF9270' }
+                : { background: '#FFF7ED', color: '#EA580C' }),
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF9270', display: 'inline-block' }} />
+              À vérifier
+            </span>
+          </div>
+
+          <p style={{ fontSize: '15px', fontWeight: 600, marginBottom: '4px', color: dark ? '#FFFFFF' : '#010101' }}>
+            Aides supplémentaires à explorer
+          </p>
+          <p style={{ fontSize: '14px', marginBottom: '4px', color: dark ? 'rgba(255,255,255,0.6)' : '#6B7280' }}>
+            + jusqu'à <strong style={{ color: dark ? '#FFE989' : '#FF9270' }}>{montantPotentiel.toLocaleString('fr-FR')}€</strong> potentiels
+          </p>
+          <p style={{ fontSize: '12px', marginBottom: '16px', color: dark ? 'rgba(255,255,255,0.35)' : '#9CA3AF' }}>
+            Ces aides nécessitent une vérification de votre éligibilité par un expert.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', opacity: 0.75 }}>
+            {aidesPotentielles.map((d, i) => (
+              <ResultatCard key={d.id} dispositif={d} index={i} dark={dark} hideMontant />
+            ))}
+          </div>
+        </motion.div>
+      )}
+
       {/* Recommencer */}
       <div style={{ textAlign: 'center', marginTop: '24px' }}>
         <button
@@ -162,19 +232,22 @@ export default function Simulateur({ inline = false }) {
   const [phase, setPhase] = useState('siren') // 'siren' | 'quiz' | 'results'
   const [direction, setDirection] = useState(1)
   const [aidesExternes, setAidesExternes] = useState([])
+  const [idr, setIdr] = useState(null) // idr les-aides.fr pour réutiliser la requête
 
   // Fetch aides dès qu'on a région/département + au moins 1 projet
   useEffect(() => {
     const { siren, naf, departement, projets, region } = reponses
     if ((departement || region) && projets?.length > 0) {
-      fetchAidesTerritoriales({ siren, ape: naf, departement, projets })
+      fetchAidesTerritoriales({ siren, ape: naf, departement, projets, requete: idr, secteur: reponses.secteur })
         .then(setAidesExternes)
     }
-  }, [reponses.projets, reponses.departement, reponses.siren])
+  }, [reponses.projets, reponses.departement, reponses.siren, idr])
 
   // ── Étape SIREN ──────────────────────────────────────────────────────────
 
   const handleSirenConfirm = (data) => {
+    // Stocker idr si disponible (depuis api/aides.js)
+    if (data._idr) setIdr(data._idr)
     setReponses(prev => ({
       ...prev,
       secteur:      data.secteur,
@@ -248,6 +321,7 @@ export default function Simulateur({ inline = false }) {
     setCurrentIndex(0)
     setPhase('siren')
     setDirection(1)
+    setIdr(null)
   }
 
   // ── Render ────────────────────────────────────────────────────────────────

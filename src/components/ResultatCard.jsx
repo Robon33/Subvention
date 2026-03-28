@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 
-export default function ResultatCard({ dispositif, index, dark = false }) {
+export default function ResultatCard({ dispositif, index, dark = false, hideMontant = false }) {
   const { nom, description, montantMin, montantMax, organismes, organisme, source } = dispositif
 
   // Normalise : préfère organismes[] sinon reconstruit depuis organisme string
@@ -64,26 +64,28 @@ export default function ResultatCard({ dispositif, index, dark = false }) {
         </div>
 
         {/* Montant */}
-        <div className="shrink-0 text-right">
-          {hasMontant ? (
-            <>
-              <div className="text-lg font-bold" style={{ color: dark ? '#FFE989' : '#1A1A18' }}>
-                {montantMax === montantMin
-                  ? `${montantMax.toLocaleString('fr-FR')} €`
-                  : `jusqu'à ${montantMax.toLocaleString('fr-FR')} €`}
-              </div>
-              {montantMin != null && montantMax !== montantMin && (
-                <div className="text-xs" style={{ color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}>
-                  dès {montantMin.toLocaleString('fr-FR')} €
+        {!hideMontant && (
+          <div className="shrink-0 text-right">
+            {hasMontant ? (
+              <>
+                <div className="text-lg font-bold" style={{ color: dark ? '#FFE989' : '#1A1A18' }}>
+                  {montantMax === montantMin
+                    ? `${montantMax.toLocaleString('fr-FR')} €`
+                    : `jusqu'à ${montantMax.toLocaleString('fr-FR')} €`}
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="text-sm font-semibold" style={{ color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}>
-              Montant<br />variable
-            </div>
-          )}
-        </div>
+                {montantMin != null && montantMax !== montantMin && (
+                  <div className="text-xs" style={{ color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}>
+                    dès {montantMin.toLocaleString('fr-FR')} €
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-sm font-semibold" style={{ color: dark ? 'rgba(255,255,255,0.4)' : '#9CA3AF' }}>
+                Montant<br />variable
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </motion.div>
   )
