@@ -104,7 +104,7 @@ function Resultats({ reponses, onRestart }) {
 }
 
 // --- Composant principal ---
-export default function Simulateur() {
+export default function Simulateur({ inline = false }) {
   const [reponses, setReponses] = useState({})
   const [currentIndex, setCurrentIndex] = useState(0)
   const [phase, setPhase] = useState('quiz') // 'quiz' | 'results'
@@ -168,7 +168,7 @@ export default function Simulateur() {
 
   if (phase === 'results') {
     return (
-      <div className="min-h-screen bg-gray-50 px-4 py-10 sm:py-16">
+      <div className={`${inline ? '' : 'min-h-screen'} bg-gray-50 px-4 py-10 sm:py-16`}>
         <div className="max-w-2xl mx-auto">
           <Resultats reponses={reponses} onRestart={handleRestart} />
         </div>
@@ -177,7 +177,7 @@ export default function Simulateur() {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className={`${inline ? '' : 'min-h-screen'} bg-white flex flex-col`}>
       {/* Header fixe avec logo + progress */}
       <header className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 py-4">
         <div className="max-w-xl mx-auto">

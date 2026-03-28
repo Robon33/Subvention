@@ -13,119 +13,79 @@
   }
 
   body {
-    @apply font-sans text-white;
+    @apply font-sans text-[#1D1D1F] bg-white;
   }
 }
 
-/* ─── Dark background ───────────────────────────────────────────────────────── */
+/* ─── Background principal ──────────────────────────────────────────────────── */
 
-.dark-bg {
-  background-color: #0a0f1e;
-  background-image:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0, 255, 136, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 30%, rgba(77, 159, 255, 0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 50% 80%, rgba(0, 255, 136, 0.04) 0%, transparent 50%);
-  animation: meshShift 20s ease-in-out infinite alternate;
+.light-bg {
+  background-color: #F5F5F7;
 }
 
-@keyframes meshShift {
-  0%   { background-position: 0% 0%, 100% 0%, 50% 100%; }
-  50%  { background-position: 10% 10%, 90% 15%, 55% 90%; }
-  100% { background-position: 5% 5%, 95% 5%, 45% 95%; }
+/* ─── Apple card ────────────────────────────────────────────────────────────── */
+
+.apple-card {
+  background: #FFFFFF;
+  border: 1px solid #D2D2D7;
+  border-radius: 18px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
-/* ─── Glass card ───────────────────────────────────────────────────────────── */
+.apple-card:hover {
+  box-shadow: 0 4px 32px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.05);
+}
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.04);
+/* ─── Apple navbar ──────────────────────────────────────────────────────────── */
+
+.apple-nav {
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
+  border-bottom: 1px solid #D2D2D7;
 }
 
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
-}
+/* ─── Apple pill badge ──────────────────────────────────────────────────────── */
 
-/* ─── Glass nav ────────────────────────────────────────────────────────────── */
-
-.glass-nav {
-  background: rgba(10, 15, 30, 0.8);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-/* ─── Glass pill ───────────────────────────────────────────────────────────── */
-
-.glass-pill {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.apple-pill {
+  background: rgba(0, 113, 227, 0.08);
+  border: 1px solid rgba(0, 113, 227, 0.18);
   border-radius: 999px;
-  padding: 0.4rem 1rem;
+  padding: 0.35rem 1rem;
+  color: #0071E3;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-/* ─── Orbs ─────────────────────────────────────────────────────────────────── */
-
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-}
-
-.orb-green {
-  width: 400px;
-  height: 400px;
-  background: rgba(0, 255, 136, 0.12);
-  animation: orbFloat 15s ease-in-out infinite alternate;
-}
-
-.orb-blue {
-  width: 350px;
-  height: 350px;
-  background: rgba(77, 159, 255, 0.1);
-  animation: orbFloat 18s ease-in-out infinite alternate-reverse;
-}
-
-@keyframes orbFloat {
-  0%   { transform: translate(0, 0) scale(1); }
-  33%  { transform: translate(20px, -15px) scale(1.05); }
-  66%  { transform: translate(-10px, 20px) scale(0.97); }
-  100% { transform: translate(15px, 10px) scale(1.02); }
-}
-
-/* ─── Gradient text ────────────────────────────────────────────────────────── */
+/* ─── Gradient text bleu Apple ──────────────────────────────────────────────── */
 
 .gradient-text {
-  background: linear-gradient(135deg, #00ff88 0%, #4d9fff 100%);
+  background: linear-gradient(135deg, #0071E3 0%, #5E5CE6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ─── CTA Button ───────────────────────────────────────────────────────────── */
+/* ─── CTA Button Apple bleu ─────────────────────────────────────────────────── */
 
 .btn-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #00ff88;
-  color: #0a0f1e;
+  background: linear-gradient(180deg, #147CE5 0%, #0071E3 100%);
+  color: #FFFFFF;
   font-weight: 700;
   border-radius: 14px;
   padding: 0.75rem 1.5rem;
   font-size: 0.9rem;
   transition: all 0.2s ease;
-  box-shadow: 0 0 30px rgba(0, 255, 136, 0.25);
-  animation: glowPulse 3s ease-in-out infinite;
+  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.30);
 }
 
 .btn-cta:hover {
+  background: linear-gradient(180deg, #1A87F5 0%, #0077ED 100%);
   transform: scale(1.02);
-  box-shadow: 0 0 50px rgba(0, 255, 136, 0.4);
+  box-shadow: 0 6px 24px rgba(0, 113, 227, 0.38);
 }
 
 .btn-cta:active {
@@ -138,32 +98,27 @@
   border-radius: 16px;
 }
 
-@keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 30px rgba(0, 255, 136, 0.25); }
-  50%       { box-shadow: 0 0 50px rgba(0, 255, 136, 0.40); }
-}
-
-/* ─── Ghost Button ─────────────────────────────────────────────────────────── */
+/* ─── Ghost Button ──────────────────────────────────────────────────────────── */
 
 .btn-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.75);
+  background: transparent;
+  color: #0071E3;
   font-weight: 600;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1.5px solid #D2D2D7;
   transition: all 0.2s ease;
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.15);
+  background: #F5F5F7;
+  border-color: #0071E3;
+  color: #0071E3;
 }
 
-/* ─── Hover lift ───────────────────────────────────────────────────────────── */
+/* ─── Hover lift ────────────────────────────────────────────────────────────── */
 
 .hover-lift {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
@@ -171,11 +126,11 @@
 
 .hover-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.10);
 }
 
-/* ─── Simulateur (fond blanc) ──────────────────────────────────────────────── */
+/* ─── Simulateur inline (override min-h-screen) ─────────────────────────────── */
 
-.sim-bg {
-  background: white;
+.sim-inline .sim-full {
+  min-height: unset;
 }
